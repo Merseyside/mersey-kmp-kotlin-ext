@@ -1,33 +1,22 @@
-enableFeaturePreview("GRADLE_METADATA")
+enableFeaturePreview("VERSION_CATALOGS")
 
-include(
-    ":app",
-    ":core",
-    ":commons:ui",
-    ":commons:views"
-)
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
 
-private val isLocalDependencies = false
-
-if (isLocalDependencies) {
-
-    include(":utils")
-    project(":utils").projectDir =
-            File(rootDir.parent, "mersey-android-library/utils")
-
-    include(":animators")
-    project(":animators").projectDir =
-            File(rootDir.parent, "mersey-android-library/animators")
-
-    include(":archy")
-    project(":archy").projectDir =
-            File(rootDir.parent, "mersey-android-library/archy")
-
-    include(":adapters")
-    project(":adapters").projectDir =
-            File(rootDir.parent, "mersey-android-library/adapters")
-
+    val catalogVersions = "1.1.6"
+    val group = "io.github.merseyside"
+    versionCatalogs {
+        val common by creating {
+            from("$group:catalog-version-common:$catalogVersions")
+        }
+    }
 }
 
-rootProject.name="android-template"
+include(":kotlin-ext")
+
+rootProject.name="kotlin-extensions"
 rootProject.buildFileName = "build.gradle.kts"
+
