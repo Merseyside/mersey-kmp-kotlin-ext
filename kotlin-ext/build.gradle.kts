@@ -22,7 +22,7 @@ publishing {
         create<MavenPublication>("mavenJava") {
             groupId = Metadata.groupId
             version = Metadata.version
-            artifactId = "kotlin-ext"
+            artifactId = project.name
 
             from(components["java"])
         }

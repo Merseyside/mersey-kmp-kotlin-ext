@@ -1,20 +1,32 @@
+import org.jetbrains.dokka.gradle.DokkaTask
 import java.util.*
 
 plugins {
     `maven-publish`
     signing
+    id("org.jetbrains.dokka")
 }
 
 group = Metadata.groupId
 version = Metadata.version
 
+val dokkaHtml by tasks.getting(DokkaTask::class)
+
+val javadocJar: TaskProvider<Jar> by tasks.registering(Jar::class) {
+    dependsOn(dokkaHtml)
+    archiveClassifier.set("javadoc")
+    from(dokkaHtml.outputDirectory)
+}
+
 publishing {
     publications {
         withType<MavenPublication>().all {
+            artifact(javadocJar)
+            val projectGitUrl = "https://github.com/Merseyside/mersey-kotlin-ext"
             pom {
                 name.set("Mersey kotlin extensions")
                 description.set("Contains some extensions and features on pure kotlin")
-                url.set("https://github.com/Merseyside/mersey-kotlin-ext")
+                url.set(projectGitUrl)
 
                 licenses {
                     license {
@@ -29,8 +41,23 @@ publishing {
                         email.set("ivanklessablin@gmail.com")
                     }
                 }
+
+                licenses {
+                    license {
+                        name.set("MIT")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+
+                issueManagement {
+                    system.set("GitHub")
+                    url.set("$projectGitUrl/issues")
+                }
+
                 scm {
-                    url.set("https://github.com/Merseyside/mersey-kotlin-ext")
+                    connection.set("scm:git:$projectGitUrl")
+                    developerConnection.set("scm:git:$projectGitUrl")
+                    url.set(projectGitUrl)
                 }
             }
         }

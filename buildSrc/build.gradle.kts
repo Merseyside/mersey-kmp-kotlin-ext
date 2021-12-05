@@ -17,4 +17,5 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin")
     implementation("org.jetbrains.kotlin:kotlin-serialization:$kotlin")
     implementation("io.github.gradle-nexus:publish-plugin:$nexus")
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:$kotlin")
 }
