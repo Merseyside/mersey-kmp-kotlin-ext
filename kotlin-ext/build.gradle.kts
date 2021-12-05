@@ -19,10 +19,12 @@ dependencies {
 
 publishing {
     publications {
-        create<MavenPublication>("maven") {
+        create<MavenPublication>("mavenJava") {
             groupId = Metadata.groupId
             version = Metadata.version
             artifactId = "kotlin-ext"
+
+            from(components["java"])
         }
     }
 }
