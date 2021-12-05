@@ -1,8 +1,8 @@
 package com.merseyside.merseyLib.kotlin.serialization
 
-import com.merseyside.merseyLib.kotlin.extensions.serialization.toJsonArray
-import com.merseyside.merseyLib.kotlin.extensions.serialization.toJsonObject
-import com.merseyside.merseyLib.kotlin.extensions.serialization.toJsonPrimitive
+import com.merseyside.merseyLib.kotlin.extensions.toJsonArray
+import com.merseyside.merseyLib.kotlin.extensions.toJsonObject
+import com.merseyside.merseyLib.kotlin.extensions.toJsonPrimitive
 import kotlinx.serialization.json.*
 
 fun ListStringConverter.toJsonArray(): JsonArray {

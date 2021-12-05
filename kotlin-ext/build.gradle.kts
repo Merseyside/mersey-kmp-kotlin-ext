@@ -6,14 +6,13 @@ plugins {
 }
 
 val libs = listOf(
-    common.serialization
+    common.kotlin.stdlib,
+    common.serialization,
+    common.coroutines,
+    common.reflect
 )
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.0")
-
     libs.forEach { lib -> implementation(lib) }
 }
 

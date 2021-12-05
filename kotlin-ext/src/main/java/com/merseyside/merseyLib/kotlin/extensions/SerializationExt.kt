@@ -1,4 +1,4 @@
-package com.merseyside.merseyLib.kotlin.extensions.serialization
+package com.merseyside.merseyLib.kotlin.extensions
 
 import com.merseyside.merseyLib.kotlin.serialization.JsonConfigurator
 import com.merseyside.merseyLib.kotlin.serialization.deserialize
