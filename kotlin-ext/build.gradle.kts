@@ -16,3 +16,13 @@ dependencies {
 
     libs.forEach { lib -> implementation(lib) }
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = Metadata.groupId
+            version = Metadata.version
+            artifactId = "kotlin-ext"
+        }
+    }
+}
