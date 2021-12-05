@@ -1,4 +1,5 @@
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.plugin.sources.getSourceSetsFromAssociatedCompilations
 import java.util.*
 
 plugins {
@@ -21,8 +22,8 @@ val javadocJar: TaskProvider<Jar> by tasks.registering(Jar::class) {
 publishing {
     publications {
         withType<MavenPublication>().all {
-            artifact(javadocJar)
             val projectGitUrl = "https://github.com/Merseyside/mersey-kotlin-ext"
+            artifact(javadocJar)
             pom {
                 name.set("Mersey kotlin extensions")
                 description.set("Contains some extensions and features on pure kotlin")

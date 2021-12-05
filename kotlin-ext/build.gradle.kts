@@ -17,6 +17,10 @@ dependencies {
     libs.forEach { lib -> implementation(lib) }
 }
 
+java {
+    withSourcesJar()
+}
+
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
