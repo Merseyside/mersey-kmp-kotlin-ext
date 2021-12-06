@@ -1,33 +1,25 @@
 plugins {
-    id(Plugins.javaLibrary)
-    id(Plugins.kotlin)
+    id(Plugins.androidConvention)
+    id(Plugins.kotlinMultiplatformConvention)
+    id(Plugins.mobileMultiplatform)
     id(Plugins.kotlinSerialization)
+    id(Plugins.iosFramework)
     `maven-publish-config`
 }
 
+kotlin {
+    android {
+        publishLibraryVariants("release", "debug")
+        publishLibraryVariantsGroupedByFlavor = true
+    }
+}
+
 val libs = listOf(
-    common.kotlin.stdlib,
     common.serialization,
     common.coroutines,
     common.reflect
 )
 
 dependencies {
-    libs.forEach { lib -> implementation(lib) }
-}
-
-java {
-    withSourcesJar()
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            groupId = Metadata.groupId
-            version = Metadata.version
-            artifactId = project.name
-
-            from(components["java"])
-        }
-    }
+    libs.forEach { lib -> commonMainImplementation(lib) }
 }

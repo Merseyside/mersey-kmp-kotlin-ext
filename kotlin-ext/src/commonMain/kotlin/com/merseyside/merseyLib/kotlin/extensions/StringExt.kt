@@ -105,3 +105,8 @@ fun String.replace(vararg oldValues: String, newValue: String): String {
 
     return newString
 }
+
+fun String.toUtf8(): String {
+    val array = this.toByteArray(Charsets.UTF_8)
+    return array.toString()
+}

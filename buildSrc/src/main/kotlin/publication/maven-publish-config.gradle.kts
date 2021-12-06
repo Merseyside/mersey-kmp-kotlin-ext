@@ -1,65 +1,35 @@
-import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.plugin.sources.getSourceSetsFromAssociatedCompilations
-import java.util.*
+import java.util.Base64
 
 plugins {
     `maven-publish`
     signing
-    id("org.jetbrains.dokka")
 }
 
 group = Metadata.groupId
 version = Metadata.version
 
-val dokkaHtml by tasks.getting(DokkaTask::class)
-
-val javadocJar: TaskProvider<Jar> by tasks.registering(Jar::class) {
-    dependsOn(dokkaHtml)
-    archiveClassifier.set("javadoc")
-    from(dokkaHtml.outputDirectory)
-}
-
 publishing {
-    publications {
-        withType<MavenPublication>().all {
-            val projectGitUrl = "https://github.com/Merseyside/mersey-kotlin-ext"
-            artifact(javadocJar)
-            pom {
-                name.set("Mersey kotlin extensions")
-                description.set("Contains some extensions and features on pure kotlin")
-                url.set(projectGitUrl)
+    publications.withType<MavenPublication>().all {
+        pom {
+            name.set("Mersey Gradle Catalog")
+            description.set("Version Catalog from Gradle 7.0")
+            url.set("https://github.com/Merseyside/mersey-version_catalog")
 
-                licenses {
-                    license {
-                        name.set("MIT")
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
+            licenses {
+                license {
+                    name.set("MIT")
+                    url.set("https://opensource.org/licenses/MIT")
                 }
-                developers {
-                    developer {
-                        id.set("Merseyside")
-                        name.set("Ivan Sablin")
-                        email.set("ivanklessablin@gmail.com")
-                    }
+            }
+            developers {
+                developer {
+                    id.set("Merseyside")
+                    name.set("Ivan Sablin")
+                    email.set("ivanklessablin@gmail.com")
                 }
-
-                licenses {
-                    license {
-                        name.set("MIT")
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
-                }
-
-                issueManagement {
-                    system.set("GitHub")
-                    url.set("$projectGitUrl/issues")
-                }
-
-                scm {
-                    connection.set("scm:git:$projectGitUrl")
-                    developerConnection.set("scm:git:$projectGitUrl")
-                    url.set(projectGitUrl)
-                }
+            }
+            scm {
+                url.set("https://github.com/Merseyside/mersey-version-catalog")
             }
         }
     }
