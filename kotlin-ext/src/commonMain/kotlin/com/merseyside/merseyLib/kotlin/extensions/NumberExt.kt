@@ -1,6 +1,5 @@
 package com.merseyside.merseyLib.kotlin.extensions
 
-import java.util.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -89,6 +88,3 @@ fun Short.isNotZero() = !this.isZero()
 fun Number.getNumberOfDigits(): Int {
     return toString().length
 }
-
-fun Double.round(decimals: Int = 2): Double = "%.${decimals}f".format(Locale.US, this).toDouble()
-fun Float.round(decimals: Int = 2): Float = "%.${decimals}f".format(Locale.US, this).toFloat()

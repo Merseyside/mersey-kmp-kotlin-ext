@@ -1,6 +1,5 @@
 package com.merseyside.merseyLib.kotlin.extensions
 
-import java.util.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -46,7 +45,7 @@ fun String.snakeToLowerCamelCase(): String {
 }
 
 fun String.snakeToUpperCamelCase(): String {
-    return this.snakeToLowerCamelCase().capitalize(Locale.getDefault())
+    return this.snakeToLowerCamelCase().capitalize()
 }
 
 fun String.camelToHumanReadable(): String {
@@ -107,6 +106,6 @@ fun String.replace(vararg oldValues: String, newValue: String): String {
 }
 
 fun String.toUtf8(): String {
-    val array = this.toByteArray(Charsets.UTF_8)
-    return array.toString()
+    val array = this.encodeToByteArray()
+    return array.decodeToString()
 }

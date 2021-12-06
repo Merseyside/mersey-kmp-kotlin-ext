@@ -1,6 +1,6 @@
 package com.merseyside.merseyLib.kotlin
 
-import java.util.*
+import kotlin.random.Random
 
 fun randomBool(positiveProbability: Float = 0.5F): Boolean {
     return when {
@@ -8,8 +8,7 @@ fun randomBool(positiveProbability: Float = 0.5F): Boolean {
         positiveProbability <= 0f -> false
 
         else -> {
-            val rand = Random()
-            rand.nextFloat() <= positiveProbability
+            Random.nextFloat() <= positiveProbability
         }
     }
 }
@@ -19,7 +18,7 @@ fun generateRandomString(length: Int): String {
         val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 
         return (1..length)
-            .map { kotlin.random.Random.nextInt(0, charPool.size) }
+            .map { Random.nextInt(0, charPool.size) }
             .map(charPool::get)
             .joinToString("")
     }
