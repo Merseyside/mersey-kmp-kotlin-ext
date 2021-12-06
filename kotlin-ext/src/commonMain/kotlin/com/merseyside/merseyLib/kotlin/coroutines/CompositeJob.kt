@@ -1,4 +1,4 @@
-package com.merseyside.merseyLib.utils.core.coroutines
+package com.merseyside.merseyLib.kotlin.coroutines
 
 import kotlinx.coroutines.Job
 
