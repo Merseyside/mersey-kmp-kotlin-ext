@@ -8,7 +8,7 @@ on:
 jobs:
   publish:
     name: Release build and publish
-    runs-on: macos-latest
+    runs-on: macos-11
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -16,8 +16,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.11
-      - name: Select latest xcode
-        run: sudo xcode-select -s '/Applications/Xcode_12.5.app/Contents/Developer'
 
       - name: Build and publish to mavenCentral
         run: ./gradlew kotlin-ext:publish
