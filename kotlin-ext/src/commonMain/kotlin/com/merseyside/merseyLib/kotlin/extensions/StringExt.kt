@@ -12,6 +12,14 @@ fun String?.isNotNullAndEmpty(): Boolean {
     return this != null && this.isNotEmpty()
 }
 
+fun <T: Any> String?.isNotNullAndEmpty(block: String.() -> T): T? {
+    return if (isNotNullAndEmpty()) {
+        this.block()
+    } else {
+        null
+    }
+}
+
 fun String.trimTrailingZero(): String {
 
     return if (this.isNotEmpty()) {
@@ -46,6 +54,10 @@ fun String.snakeToLowerCamelCase(): String {
 
 fun String.snakeToUpperCamelCase(): String {
     return this.snakeToLowerCamelCase().capitalize()
+}
+
+fun String.camelToUpperSnakeCase(): String {
+    return this.camelToSnakeCase().uppercase()
 }
 
 fun String.camelToHumanReadable(): String {

@@ -72,6 +72,15 @@ fun Short?.isNotNullAndZero(): Boolean {
     return this != null && this.toInt().isNotZero()
 }
 
+@OptIn(ExperimentalContracts::class)
+fun Long?.isNotNullAndZero(): Boolean {
+    contract {
+        returns(true) implies (this@isNotNullAndZero != null)
+    }
+
+    return this != null && this.isNotZero()
+}
+
 fun Number.isEven(): Boolean {
     return this.toInt() % 2 == 0
 }

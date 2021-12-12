@@ -24,7 +24,9 @@ fun <T: Any> List<T>.removeEqualItems(): List<T> {
     return this.toSet().toList()
 }
 
-fun <T: Any> List<T>.unique(predicate: (T, T) -> Boolean): List<T> {
+fun <T : Any> List<T>.unique(
+    predicate: (obj1: T, obj2: T) -> Boolean = { obj1, obj2 -> obj1 == obj2 }
+): List<T> {
     return if (isNotEmpty()) {
         val uniqueList = ArrayList<T>()
 
@@ -32,9 +34,7 @@ fun <T: Any> List<T>.unique(predicate: (T, T) -> Boolean): List<T> {
             if (index.isZero()) {
                 uniqueList.add(value)
             } else {
-
                 val found = uniqueList.find { predicate.invoke(it, value) }
-
                 if (found == null) uniqueList.add(0, value)
             }
         }
@@ -147,4 +147,15 @@ inline fun <T> Iterable<T>.separate(predicate: (T) -> Boolean): Pair<List<T>, Li
     }
 
     return trueList to falseList
+}
+
+fun <T> List<T>.merge(vararg lists: List<T>): List<T> {
+    if (lists.isEmpty()) throw IllegalArgumentException("Pass at least one list!")
+    val list: MutableList<T> = ArrayList(this)
+
+    lists.forEach {
+        list.addAll(it)
+    }
+
+    return list
 }

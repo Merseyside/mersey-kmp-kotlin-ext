@@ -4,9 +4,10 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonBuilder
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus
+import kotlin.native.concurrent.ThreadLocal
 
+@ThreadLocal
 object JsonConfigurator {
-
     private var _json: Json? = null
 
     val json: Json
