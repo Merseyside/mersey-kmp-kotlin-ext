@@ -5,4 +5,5 @@ object Plugins {
     const val iosFramework = "dev.icerock.mobile.multiplatform.ios-framework"
     const val mobileMultiplatform = "dev.icerock.mobile.multiplatform"
     const val dokka = "org.jetbrains.dokka"
+    const val mavenPublishConfig = "maven-publish-config"
 }

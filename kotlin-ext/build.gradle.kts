@@ -4,7 +4,7 @@ plugins {
     id(Plugins.mobileMultiplatform)
     id(Plugins.kotlinSerialization)
     id(Plugins.iosFramework)
-    `maven-publish-config`
+    id(Plugins.mavenPublishConfig)
 }
 
 kotlin {
