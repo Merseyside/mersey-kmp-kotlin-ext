@@ -7,7 +7,6 @@ abstract class BaseCoroutineUseCase<T, Params> {
     protected val mainScope: CoroutineScope by lazy { CoroutineScope(applicationContext) }
 
     private val asyncJob = SupervisorJob()
-    private val scope = CoroutineScope(asyncJob)
 
     var job: Job? = null
         set(value) {
@@ -28,7 +27,7 @@ abstract class BaseCoroutineUseCase<T, Params> {
     protected abstract suspend fun executeOnBackground(params: Params?): T
 
     protected suspend fun doWorkAsync(params: Params?): Deferred<T> = coroutineScope {
-        async(asyncJob) {
+        async(asyncJob + Dispatchers.Default) {
             executeOnBackground(params)
         }.also { job = it }
     }
