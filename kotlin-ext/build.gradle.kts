@@ -3,7 +3,7 @@ plugins {
     id(Plugins.kotlinMultiplatformConvention)
     id(Plugins.mobileMultiplatform)
     id(Plugins.kotlinSerialization)
-    //id(Plugins.iosFramework)
+    id(Plugins.iosFramework)
     id(Plugins.mavenPublishConfig)
 }
 

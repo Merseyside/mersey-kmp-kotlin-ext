@@ -1,5 +1,7 @@
 package com.merseyside.merseyLib.kotlin
 
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.random.Random
 
 fun randomBool(positiveProbability: Float = 0.5F): Boolean {
@@ -48,4 +50,11 @@ fun <T> merge(first: List<T>, second: List<T>): List<T> {
     val list: MutableList<T> = ArrayList(first)
     list.addAll(second)
     return list
+}
+
+fun <T: Number> getMinMax(first: T, second: T): Pair<T, T> {
+    val min = min(first.toInt(), second.toInt())
+    val max = max(first.toInt(), second.toInt())
+
+    return min as T to max as T
 }
