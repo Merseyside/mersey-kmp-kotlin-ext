@@ -28,6 +28,10 @@ actual object Logger {
         NSLog("%s Error: %s", adoptTag(tag), throwable.message)
     }
 
+    actual fun logErr(tag: Any?, msg: String?, throwable: Throwable) {
+
+    }
+
     actual fun logErr(throwable: Throwable) {
         NSLog("%s Error: %s", TAG, throwable.message)
     }

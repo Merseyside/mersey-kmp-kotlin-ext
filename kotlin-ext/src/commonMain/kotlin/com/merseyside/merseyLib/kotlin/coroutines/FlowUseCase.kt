@@ -3,9 +3,7 @@ package com.merseyside.merseyLib.kotlin.coroutines
 import com.merseyside.merseyLib.kotlin.Logger
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
 import kotlin.coroutines.CoroutineContext
 
 abstract class FlowUseCase<T, Params> : CoroutineScope by CoroutineScope(applicationContext) {
@@ -33,22 +31,25 @@ abstract class FlowUseCase<T, Params> : CoroutineScope by CoroutineScope(applica
         onError: (Throwable) -> Unit = {}
     ): Job {
         val flow = executeOnBackground(params)
-            .flowOn(backgroundContext)
+            .onEach { data -> onEmit.invoke(data) }
+            .catch { cause ->
+                when (cause) {
+                    is CancellationException -> Logger.log(
+                        this@FlowUseCase,
+                        "Coroutine had canceled"
+                    )
+                    is NoParamsException -> {
+                        Logger.log(this@FlowUseCase, "Coroutine had canceled")
+                    }
+                    else -> {
+                        Logger.logErr(cause)
+                        onError.invoke(cause)
+                    }
+                }
+            }.flowOn(backgroundContext)
 
         return coroutineScope.launch {
-            try {
-                flow.collect { data ->
-                    onEmit.invoke(data)
-                }
-            } catch (e: CancellationException) {
-                Logger.log(this@FlowUseCase, "Coroutine had canceled")
-            } catch (exception: NoParamsException) {
-                throw exception
-            }
-            catch (e: Throwable) {
-                Logger.log(e)
-                onError.invoke(e)
-            }
+            flow.collect()
         }.also { job = it }
     }
 

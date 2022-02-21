@@ -6,4 +6,5 @@ object Plugins {
     const val mobileMultiplatform = "dev.icerock.mobile.multiplatform"
     const val dokka = "org.jetbrains.dokka"
     const val mavenPublishConfig = "maven-publish-config"
+    const val cocoaPods = "org.jetbrains.kotlin.native.cocoapods"
 }

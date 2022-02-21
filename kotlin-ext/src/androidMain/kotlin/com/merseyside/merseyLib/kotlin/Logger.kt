@@ -27,6 +27,11 @@ actual object Logger {
         logErr("", msg)
     }
 
+    actual fun logErr(tag: Any?, msg: String?, throwable: Throwable) {
+        logErr(tag, msg)
+        throwable.printStackTrace()
+    }
+
     actual fun logInfo(tag: Any?, msg: Any?) {
         if (isLogging()) {
             Log.i(adoptTag(tag), adoptMsg(msg))
