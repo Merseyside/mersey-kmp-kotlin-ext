@@ -12,7 +12,7 @@ fun Collection<*>?.isNotNullAndEmpty(): Boolean {
     return this != null && this.isNotEmpty()
 }
 
-fun <T, R> List<T>?.isNotNullAndEmpty(block: List<T>.() -> R): R? {
+inline fun <T, R> List<T>?.isNotNullAndEmpty(block: List<T>.() -> R): R? {
     return if (this.isNotNullAndEmpty()) {
         block()
     } else {
@@ -20,11 +20,11 @@ fun <T, R> List<T>?.isNotNullAndEmpty(block: List<T>.() -> R): R? {
     }
 }
 
-fun <T: Any> List<T>.removeEqualItems(): List<T> {
+fun <T> List<T>.removeEqualItems(): List<T> {
     return this.toSet().toList()
 }
 
-fun <T : Any> List<T>.unique(
+fun <T> List<T>.unique(
     predicate: (obj1: T, obj2: T) -> Boolean = { obj1, obj2 -> obj1 == obj2 }
 ): List<T> {
     return if (isNotEmpty()) {
@@ -79,7 +79,7 @@ fun <T: Any, R : Comparable<R>> List<T>.minByNullable(selector: (T) -> R?): T? {
     return minElement
 }
 
-fun <T: Any> List<T?>.forEachNotNull(action: (T) -> Unit): Unit {
+inline fun <T> List<T?>.forEachNotNull(action: (T) -> Unit) {
     return this.filterNotNull().forEach(action)
 }
 
@@ -105,7 +105,7 @@ fun <T: Any> List<List<T>>.union(): List<T> {
 fun <T: Any> List<List<T>>.intersect(): List<T> {
     val hasEmptyList = find { it.isEmpty() } != null
 
-    if (hasEmptyList || isEmpty()) return emptyList<T>()
+    if (hasEmptyList || isEmpty()) return emptyList()
     if (size == 1) return first()
 
     var resultList = first().toSet()
@@ -117,17 +117,17 @@ fun <T: Any> List<List<T>>.intersect(): List<T> {
     return resultList.toList()
 }
 
-fun <K, V> Map<out K, V>.forEachEntry(action: (key: K, value: V) -> Unit) {
+inline fun <K, V> Map<out K, V>.forEachEntry(action: (key: K, value: V) -> Unit) {
     forEach { entry -> action(entry.key, entry.value) }
 }
 
-fun <T: Any, R: Any> Collection<T?>.whenAllNotNull(block: (List<T>) -> R) {
+inline fun <T, R> Collection<T?>.whenAllNotNull(block: (List<T>) -> R) {
     if (this.all { it != null }) {
         block(this.filterNotNull())
     }
 }
 
-fun <T: Any, R: Any> Collection<T?>.whenAnyNotNull(block: (List<T>) -> R) {
+inline fun <T, R> Collection<T?>.whenAnyNotNull(block: (List<T>) -> R) {
     if (this.any { it != null }) {
         block(this.filterNotNull())
     }
