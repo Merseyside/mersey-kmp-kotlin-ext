@@ -1,9 +1,24 @@
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id(Plugins.androidConvention)
-    id(Plugins.kotlinMultiplatformConvention)
-    id(Plugins.mobileMultiplatform)
-    id(Plugins.kotlinSerialization)
-    id(Plugins.mavenPublishConfig)
+    with(catalogPlugins.plugins) {
+        plugin(android.library)
+        plugin(kotlin.multiplatform)
+        plugin(moko.multiplatform)
+        plugin(kotlin.serialization)
+        id(mersey.android.convention.id())
+        id(mersey.kotlin.convention.id())
+        plugin(kotlin.kapt)
+    }
+    `maven-publish-config`
+}
+
+android {
+    compileSdk = Application.compileSdk
+
+    defaultConfig {
+        minSdk = Application.minSdk
+        targetSdk = Application.targetSdk
+    }
 }
 
 kotlin {
@@ -16,16 +31,15 @@ kotlin {
     // Add the ARM64 simulator target
     iosSimulatorArm64()
 
-    val iosMain by sourceSets.getting
-    val iosSimulatorArm64Main by sourceSets.getting
-
-    // Set up dependencies between the source sets
-    iosSimulatorArm64Main.dependsOn(iosMain)
+    sourceSets {
+        val iosMain by getting
+        val iosSimulatorArm64Main by getting
+        iosSimulatorArm64Main.dependsOn(iosMain)
+    }
 }
 
-
-
 val libs = listOf(
+    common.kotlin.stdlib,
     common.serialization,
     common.coroutines,
     common.reflect

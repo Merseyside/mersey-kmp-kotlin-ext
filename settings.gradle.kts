@@ -6,11 +6,15 @@ dependencyResolutionManagement {
         mavenLocal()
     }
 
-    val catalogVersions = "1.3.0"
+    val catalogVersions = "1.4.3"
     val group = "io.github.merseyside"
     versionCatalogs {
         val common by creating {
             from("$group:catalog-version-common:$catalogVersions")
+        }
+
+        val catalogPlugins by creating {
+            from("$group:catalog-version-plugins:$catalogVersions")
         }
     }
 }

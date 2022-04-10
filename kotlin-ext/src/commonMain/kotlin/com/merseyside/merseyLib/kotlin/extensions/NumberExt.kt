@@ -97,3 +97,5 @@ fun Short.isNotZero() = !this.isZero()
 fun Number.getNumberOfDigits(): Int {
     return toString().length
 }
+
+expect fun Double.toFormattedString(fractionDigits: Int = 2): String

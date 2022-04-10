@@ -2,6 +2,7 @@ package com.merseyside.merseyLib.kotlin.extensions
 
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
+import kotlin.reflect.KClass
 
 @OptIn(ExperimentalContracts::class)
 fun Collection<*>?.isNotNullAndEmpty(): Boolean {
@@ -158,4 +159,12 @@ fun <T> List<T>.merge(vararg lists: List<T>): List<T> {
     }
 
     return list
+}
+
+inline fun <reified R> Iterable<R>.findIsInstance(): R {
+    return filterIsInstance<R>().first()
+}
+
+inline fun <reified R> Iterable<R>.findLastIsInstance(): R {
+    return filterIsInstance<R>().last()
 }

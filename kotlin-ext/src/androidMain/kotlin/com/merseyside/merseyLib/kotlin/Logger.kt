@@ -78,11 +78,7 @@ actual object Logger {
                 tag.javaClass.simpleName
             }
 
-            if (strTag.isEmpty()) {
-                TAG
-            } else {
-                strTag
-            }
+            strTag.ifEmpty { TAG }
         } else {
             TAG
         }
@@ -90,13 +86,9 @@ actual object Logger {
 
     internal actual fun adoptMsg(msg: Any?): String {
         return when (msg) {
-            null -> {
-                "null"
-            }
+            null -> { "null" }
 
-            is String -> {
-                msg
-            }
+            is String -> { msg }
 
             is Collection<*> -> {
                 if (msg.isEmpty()) {
@@ -106,9 +98,24 @@ actual object Logger {
                 }
             }
 
-            else -> {
-                msg.toString()
+            is Map<*, *> -> {
+                if (msg.isEmpty()) {
+                    "Empty map"
+                } else {
+                    msg.map { "${it.key}: ${it.value}" }
+                        .joinToString(separator = "\n")
+                }
             }
+
+            is Array<*> -> {
+                if (msg.isEmpty()) {
+                    "Empty array"
+                } else {
+                    msg.joinToString(separator = "\n")
+                }
+            }
+
+            else -> { msg.toString() }
         }
     }
 
