@@ -4,7 +4,7 @@ import kotlinx.coroutines.*
 
 abstract class BaseCoroutineUseCase<T, Params> {
 
-    protected val mainScope: CoroutineScope by lazy { CoroutineScope(applicationContext) }
+    protected val mainScope: CoroutineScope by lazy { CoroutineScope(uiDispatcher) }
 
     private val asyncJob = SupervisorJob()
     
@@ -26,7 +26,7 @@ abstract class BaseCoroutineUseCase<T, Params> {
     protected abstract suspend fun executeOnBackground(params: Params?): T
 
     protected suspend fun doWorkAsync(params: Params?): Deferred<T> = coroutineScope {
-        async(asyncJob + Dispatchers.Default) {
+        async(asyncJob + defaultDispatcher) {
             invoke(params)
         }.also { job = it }
     }

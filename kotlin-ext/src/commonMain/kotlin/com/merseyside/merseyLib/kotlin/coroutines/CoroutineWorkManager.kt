@@ -6,7 +6,7 @@ import kotlinx.coroutines.*
 
 class CoroutineWorkManager<Result, Args>(
     private val mode: WorkerMode = WorkerMode.SEQUENTIAL,
-    var scope: CoroutineScope = CoroutineScope(applicationContext)
+    var scope: CoroutineScope = CoroutineScope(uiDispatcher)
 ) {
     enum class WorkerMode { SEQUENTIAL, PARALLEL }
 

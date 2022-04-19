@@ -6,7 +6,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlin.coroutines.CoroutineContext
 
-abstract class FlowUseCase<T, Params> : CoroutineScope by CoroutineScope(applicationContext) {
+abstract class FlowUseCase<T, Params> : CoroutineScope by CoroutineScope(uiDispatcher) {
     var job: Job? = null
         set(value) {
             field?.let {
@@ -17,8 +17,6 @@ abstract class FlowUseCase<T, Params> : CoroutineScope by CoroutineScope(applica
 
             field = value
         }
-
-    var backgroundContext: CoroutineContext = computationContext
 
     @ExperimentalCoroutinesApi
     protected abstract fun executeOnBackground(params: Params?): Flow<T>
@@ -39,14 +37,15 @@ abstract class FlowUseCase<T, Params> : CoroutineScope by CoroutineScope(applica
                         "Coroutine had canceled"
                     )
                     is NoParamsException -> {
-                        Logger.log(this@FlowUseCase, "Coroutine had canceled")
+                        Logger.log(this@FlowUseCase, "No params passed!")
+                        throw cause
                     }
                     else -> {
                         Logger.logErr(cause)
                         onError.invoke(cause)
                     }
                 }
-            }.flowOn(backgroundContext)
+            }.flowOn(defaultDispatcher)
 
         return coroutineScope.launch {
             flow.collect()
