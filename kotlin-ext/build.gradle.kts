@@ -50,9 +50,5 @@ val libs = listOf(
 
 dependencies {
     libs.forEach { lib -> commonMainImplementation(lib) }
-    commonMainImplementation(multiplatformLibs.coroutines) {
-        version {
-            strictly("[1.5.0-native-mt, 1.6.1-native-mt[")
-        }
-    }
+    commonMainImplementation(multiplatformLibs.coroutines)
 }
