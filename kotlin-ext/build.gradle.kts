@@ -38,6 +38,10 @@ kotlin {
     }
 }
 
+kotlinConvention {
+    compilerArgs = listOf("-opt-in=kotlin.RequiresOptIn")
+}
+
 val libs = listOf(
     common.kotlin.stdlib,
     common.serialization,

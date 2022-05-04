@@ -44,7 +44,9 @@ fun shrinkNumber(number: Number): String {
     }
 }
 
-fun String.hexStringToByteArray() = ByteArray(this.length / 2) { this.substring(it * 2, it * 2 + 2).toInt(16).toByte() }
+fun String.hexStringToByteArray() = ByteArray(this.length / 2) {
+    this.substring(it * 2, it * 2 + 2).toInt(16).toByte()
+}
 
 fun <T> merge(first: List<T>, second: List<T>): List<T> {
     val list: MutableList<T> = ArrayList(first)
@@ -52,6 +54,7 @@ fun <T> merge(first: List<T>, second: List<T>): List<T> {
     return list
 }
 
+@Suppress("UNCHECKED_CAST")
 fun <T: Number> getMinMax(first: T, second: T): Pair<T, T> {
     val min = min(first.toInt(), second.toInt())
     val max = max(first.toInt(), second.toInt())

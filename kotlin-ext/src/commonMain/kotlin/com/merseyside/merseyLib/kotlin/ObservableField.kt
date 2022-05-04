@@ -3,10 +3,10 @@ package com.merseyside.merseyLib.kotlin
 abstract class ObservableField<T> {
     abstract val value: T?
 
-    protected val observableList: MutableList<(T) -> Unit> = mutableListOf()
+    protected val observerList: MutableList<(T) -> Unit> = mutableListOf()
 
     fun observe(block: (T) -> Unit): Disposable<T> {
-        observableList.add(block)
+        observerList.add(block)
         value?.let {
             block(it)
         }
@@ -14,40 +14,41 @@ abstract class ObservableField<T> {
         return Disposable(this, block)
     }
 
-    fun removeObserver(block: (T) -> Unit) {
-        observableList.remove(block)
+    fun removeObserver(block: (T) -> Unit): Boolean {
+        return observerList.remove(block)
     }
 
-    fun removeAllObservers() { observableList.clear() }
+    protected fun notifyObservers() {
+        value?.let {
+            if (observerList.isNotEmpty()) {
+                observerList.forEach { observer -> observer(it) }
+            }
+        }
+    }
+
+    fun removeAllObservers() {
+        observerList.clear()
+    }
 }
 
-open class MutableObservableField<T>(initialValue: T? = null): ObservableField<T>() {
+open class MutableObservableField<T>(initialValue: T? = null) : ObservableField<T>() {
 
     override var value: T? = initialValue
         set(value) {
             field = value
 
             if (value != null) {
-                if (observableList.isNotEmpty()) {
-                    observableList.forEach { it(value) }
-                }
+                notifyObservers()
             }
         }
 }
 
-class SingleObservableField<T>(initialValue: T? = null): ObservableField<T>() {
+class SingleObservableField<T>(initialValue: T? = null) : MutableObservableField<T>() {
     override var value: T? = initialValue
-        get() {
-            return field.also { value = null }
-        }
+        get() = field.also { value = null }
         set(value) {
-            field = value
-
             if (value != null) {
-                if (observableList.isNotEmpty()) {
-                    val v = this.value ?: return
-                    observableList.forEach { it(v) }
-                }
+                notifyObservers()
             }
         }
 }
