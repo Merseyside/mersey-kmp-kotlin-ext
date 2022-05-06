@@ -47,6 +47,7 @@ class SingleObservableField<T>(initialValue: T? = null) : MutableObservableField
     override var value: T? = initialValue
         get() = field.also { value = null }
         set(value) {
+            field = value
             if (value != null) {
                 notifyObservers()
             }
