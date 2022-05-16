@@ -23,12 +23,16 @@ abstract class BaseCoroutineUseCase<T, Params> {
             return job?.isActive ?: false
         }
 
-    protected abstract suspend fun executeOnBackground(params: Params?): T
+    protected abstract suspend fun doWork(params: Params?): T
 
-    protected suspend fun doWorkAsync(params: Params?): Deferred<T> = coroutineScope {
+    protected suspend fun doWorkDeferred(params: Params?): Deferred<T> = coroutineScope {
         async(asyncJob + defaultDispatcher) {
-            invoke(params)
+            doWork(params)
         }.also { job = it }
+    }
+
+    suspend fun executeAsync(params: Params?): T {
+        return doWorkDeferred(params).await()
     }
 
     fun cancel(cause: CancellationException? = null): Boolean {
@@ -39,5 +43,5 @@ abstract class BaseCoroutineUseCase<T, Params> {
         } ?: false
     }
 
-    suspend operator fun invoke(params: Params? = null) = executeOnBackground(params)
+    suspend operator fun invoke(params: Params? = null) = executeAsync(params)
 }

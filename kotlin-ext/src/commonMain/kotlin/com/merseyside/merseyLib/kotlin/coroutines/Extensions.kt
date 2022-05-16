@@ -30,11 +30,11 @@ fun <R1, P1, R2, P2> CoroutineScope.zipUseCases(
     onComplete: (R1, R2) -> Unit = { _, _  -> },
 ): Job {
     return launch {
-        val deffered1 = async { c1(p1) }
-        val deffered2 = async { c2(p2) }
+        val deferred1 = async { c1(p1) }
+        val deferred2 = async { c2(p2) }
 
         try {
-            onComplete(deffered1.await(), deffered2.await())
+            onComplete(deferred1.await(), deferred2.await())
         } catch (throwable: Throwable) {
             onError(throwable)
             Logger.logErr(throwable)
@@ -53,12 +53,12 @@ fun <R1, P1, R2, P2, R3, P3> CoroutineScope.zipUseCases(
     onComplete: (R1, R2, R3) -> Unit = { _, _, _  -> },
 ): Job {
     return launch {
-        val deffered1 = async { c1(p1) }
-        val deffered2 = async { c2(p2) }
-        val deffered3 = async { c3(p3) }
+        val deferred1 = async { c1(p1) }
+        val deferred2 = async { c2(p2) }
+        val deferred3 = async { c3(p3) }
 
         try {
-            onComplete(deffered1.await(), deffered2.await(), deffered3.await())
+            onComplete(deferred1.await(), deferred2.await(), deferred3.await())
         } catch (throwable: Throwable) {
             onError(throwable)
             Logger.logErr(throwable)

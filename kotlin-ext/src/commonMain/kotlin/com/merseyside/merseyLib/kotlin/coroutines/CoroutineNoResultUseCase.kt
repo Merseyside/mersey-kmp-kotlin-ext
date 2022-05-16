@@ -19,9 +19,8 @@ abstract class CoroutineNoResultUseCase<Params> : BaseCoroutineUseCase<Unit, Par
         onPreExecute()
 
         try {
-            val deferred = doWorkAsync(params)
-            deferred.await()
-            onComplete.invoke()
+            executeAsync(params)
+            onComplete()
         } catch (exception: CancellationException) {
             Logger.log(this@CoroutineNoResultUseCase, "The coroutine had canceled")
         } catch (exception: NoParamsException) {
