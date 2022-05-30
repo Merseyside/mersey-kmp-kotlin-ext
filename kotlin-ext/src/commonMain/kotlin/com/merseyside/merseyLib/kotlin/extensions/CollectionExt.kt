@@ -161,6 +161,11 @@ fun <T> List<T>.merge(vararg lists: List<T>): List<T> {
     return list
 }
 
+@Throws(NullPointerException::class)
+fun <T> Collection<T>.firstNotNull(): T {
+    return find { it != null } ?: throw NullPointerException("No non-null items found!")
+}
+
 inline fun <reified R> Iterable<R>.findIsInstance(): R {
     return filterIsInstance<R>().first()
 }
