@@ -174,10 +174,10 @@ inline fun <reified R> Iterable<R>.findLastIsInstance(): R {
     return filterIsInstance<R>().last()
 }
 
-private fun Collection<Boolean>.flatWithOr(): Boolean {
+fun Collection<Boolean>.flatWithOr(): Boolean {
     return contains(true)
 }
 
-private fun Collection<Boolean>.flatWithAnd(): Boolean {
+fun Collection<Boolean>.flatWithAnd(): Boolean {
     return !contains(false)
 }
