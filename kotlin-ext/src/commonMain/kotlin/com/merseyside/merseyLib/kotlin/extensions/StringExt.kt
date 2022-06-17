@@ -124,6 +124,13 @@ fun String.decodeBase64String(): String {
     return decodeBase64().toString()
 }
 
+fun String.capitalize(): String {
+    return replaceFirstChar {
+        if (it.isLowerCase()) it.titlecase()
+        else it.toString()
+    }
+}
+
 expect fun String.encodeBase64(): String
 
 expect fun String.decodeBase64(): ByteArray

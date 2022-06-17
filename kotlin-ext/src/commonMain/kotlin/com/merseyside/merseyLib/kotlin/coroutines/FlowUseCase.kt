@@ -4,9 +4,11 @@ import com.merseyside.merseyLib.kotlin.Logger
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlin.coroutines.CoroutineContext
 
-abstract class FlowUseCase<T, Params> : CoroutineScope by CoroutineScope(uiDispatcher) {
+abstract class FlowUseCase<T, Params> {
+
+    protected val mainScope: CoroutineScope by lazy { CoroutineScope(uiDispatcher) }
+
     var job: Job? = null
         set(value) {
             field?.let {
@@ -19,16 +21,16 @@ abstract class FlowUseCase<T, Params> : CoroutineScope by CoroutineScope(uiDispa
         }
 
     @ExperimentalCoroutinesApi
-    protected abstract fun executeOnBackground(params: Params?): Flow<T>
+    protected abstract fun doWork(params: Params?): Flow<T>
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun observe(
-        coroutineScope: CoroutineScope = this,
+        coroutineScope: CoroutineScope = mainScope,
         params: Params? = null,
         onEmit: (T) -> Unit,
         onError: (Throwable) -> Unit = {}
     ): Job {
-        val flow = executeOnBackground(params)
+        val flow = doWork(params)
             .onEach { data -> onEmit.invoke(data) }
             .catch { cause ->
                 when (cause) {
@@ -59,6 +61,6 @@ abstract class FlowUseCase<T, Params> : CoroutineScope by CoroutineScope(uiDispa
 
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(params: Params? = null): Flow<T> {
-        return executeOnBackground(params)
+        return doWork(params)
     }
 }
