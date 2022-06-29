@@ -2,6 +2,7 @@ package com.merseyside.merseyLib.kotlin.coroutines
 
 import com.merseyside.merseyLib.kotlin.Logger
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
+import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import kotlinx.coroutines.*
 
 class CoroutineWorkManager<Result, Args>(

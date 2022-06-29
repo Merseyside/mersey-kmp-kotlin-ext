@@ -1,7 +1,9 @@
-package com.merseyside.merseyLib.kotlin.coroutines
+package com.merseyside.merseyLib.kotlin.coroutines.flow
 
 import com.merseyside.merseyLib.kotlin.Logger
+import com.merseyside.merseyLib.kotlin.coroutines.utils.defaultDispatcher
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
+import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 

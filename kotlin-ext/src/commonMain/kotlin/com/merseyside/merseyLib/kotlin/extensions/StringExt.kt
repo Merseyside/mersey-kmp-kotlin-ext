@@ -99,11 +99,11 @@ fun String.startsWithLowerCase(): Boolean {
 }
 
 fun String.containsDigits(): Boolean {
-    return contains("[0-9]".toRegex())
+    return contains("\\d".toRegex())
 }
 
 fun String.getLettersCount(): Int {
-    return filter { it.isLetter() }.count()
+    return count { it.isLetter() }
 }
 
 fun String.replace(vararg oldValues: String, newValue: String): String {

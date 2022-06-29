@@ -13,6 +13,7 @@ plugins {
 }
 
 android {
+    namespace = "com.merseyside.merseyLib.kotlin"
     compileSdk = Application.compileSdk
 
     defaultConfig {

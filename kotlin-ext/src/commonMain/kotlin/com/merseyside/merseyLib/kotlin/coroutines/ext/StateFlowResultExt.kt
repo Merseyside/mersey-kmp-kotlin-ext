@@ -1,6 +1,6 @@
 package com.merseyside.merseyLib.kotlin.coroutines.ext
 
-import com.merseyside.merseyLib.kotlin.coroutines.Result
+import com.merseyside.merseyLib.kotlin.coroutines.flow.Result
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

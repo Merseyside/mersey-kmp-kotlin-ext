@@ -9,11 +9,8 @@ plugins {
 }
 
 allprojects {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        google()
-    }
+    group = "io.github.merseyside"
+    version = "1.2.1"
 }
 
 tasks.register("clean", Delete::class).configure {

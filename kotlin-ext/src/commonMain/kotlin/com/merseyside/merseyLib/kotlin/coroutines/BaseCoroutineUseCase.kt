@@ -1,5 +1,7 @@
 package com.merseyside.merseyLib.kotlin.coroutines
 
+import com.merseyside.merseyLib.kotlin.coroutines.utils.defaultDispatcher
+import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import kotlinx.coroutines.*
 
 abstract class BaseCoroutineUseCase<T, Params> {
@@ -31,7 +33,7 @@ abstract class BaseCoroutineUseCase<T, Params> {
         }.also { job = it }
     }
 
-    suspend fun executeAsync(params: Params?): T {
+    protected suspend fun executeAsync(params: Params?): T {
         return doWorkDeferred(params).await()
     }
 
