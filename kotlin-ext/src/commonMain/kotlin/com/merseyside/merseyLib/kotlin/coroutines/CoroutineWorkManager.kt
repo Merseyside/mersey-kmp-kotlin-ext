@@ -1,6 +1,6 @@
 package com.merseyside.merseyLib.kotlin.coroutines
 
-import com.merseyside.merseyLib.kotlin.Logger
+import com.merseyside.merseyLib.kotlin.logger.Logger
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
 import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import kotlinx.coroutines.*
@@ -25,12 +25,12 @@ class CoroutineWorkManager<Result, Args>(
     var onError: (Throwable) -> Unit = {}
     var onPostExecute: () -> Unit = {}
 
-    fun add(args: Args, block: suspend () -> Result) {
-        workBuffer.addLast(Pair(block, args))
+    fun add(args: Args, resultProvider: suspend () -> Result) {
+        workBuffer.addLast(Pair(resultProvider, args))
     }
 
     fun addAndExecute(args: Args, block: suspend () -> Result): Job? {
-        add(args, block = block)
+        add(args, resultProvider = block)
 
         return if (mode == WorkerMode.PARALLEL) {
             execute()
@@ -89,10 +89,10 @@ class CoroutineWorkManager<Result, Args>(
     }
 
     private suspend fun runParallelWork() = coroutineScope {
-        workBuffer.map {
-            async {
-                val deferred = doWorkAsync(it.first)
-                completeJob(deferred.await(), it.second)
+        workBuffer.forEach { (resultProvider, args) ->
+            launch {
+                val deferred = doWorkAsync(resultProvider)
+                completeJob(deferred.await(), args)
             }
         }
 

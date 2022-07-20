@@ -1,9 +1,8 @@
-package com.merseyside.merseyLib.kotlin.extensions
+package com.merseyside.merseyLib.kotlin.logger
 
-import com.merseyside.merseyLib.kotlin.Logger
-import com.merseyside.merseyLib.kotlin.Logger.log as loggerLog
+import com.merseyside.merseyLib.kotlin.logger.Logger.log as loggerLog
 
-fun <T> T.log(tag: Any = Logger.TAG, prefix: Any? = null, suffix: Any? = null): T {
+inline fun <reified T> T.log(tag: Any = T::class.simpleName ?: Logger.TAG, prefix: Any? = null, suffix: Any? = null): T {
     val msg = "${prefix ?: ""} ${Logger.adoptMsg(this)} ${suffix ?: ""}"
     Logger.log(tag, msg)
 
@@ -17,13 +16,13 @@ inline fun <reified T> T.logMsg(
     return this.also { loggerLog(tag, message) }
 }
 
-fun <T> T.log(
+fun <T> T?.log(
     tag: Any = Logger.TAG,
     prefix: Any? = null,
     suffix: Any? = null,
-    msgBlock: T.() -> Any
-): T {
-    val msg = "${prefix ?: ""} ${Logger.adoptMsg(msgBlock())} ${suffix ?: ""}"
+    msgBlock: T?.() -> T?
+): T? {
+    val msg = "${prefix ?: ""} ${Logger.adoptMsg(msgBlock(this))} ${suffix ?: ""}"
     Logger.log(tag, msg)
 
     return this

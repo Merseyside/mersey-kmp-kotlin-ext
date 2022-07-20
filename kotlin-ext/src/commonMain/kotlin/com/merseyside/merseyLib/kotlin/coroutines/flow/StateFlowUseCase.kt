@@ -1,16 +1,16 @@
 package com.merseyside.merseyLib.kotlin.coroutines.flow
 
-import com.merseyside.merseyLib.kotlin.Logger
+import com.merseyside.merseyLib.kotlin.logger.Logger
 import com.merseyside.merseyLib.kotlin.coroutines.utils.defaultDispatcher
 import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-abstract class StateFlowUseCase<T, Params> : CoroutineScope by CoroutineScope(uiDispatcher) {
+abstract class StateFlowUseCase<T, Params>(
+    val coroutineScope: CoroutineScope = CoroutineScope(uiDispatcher)
+) {
 
-    var coroutineScope = CoroutineScope(uiDispatcher)
-    private lateinit var stateFlow: MutableStateFlow<T>
+    private lateinit var stateFlow: StateFlow<T>
     private val asyncJob = SupervisorJob()
 
     var job: Job? = null
@@ -28,24 +28,6 @@ abstract class StateFlowUseCase<T, Params> : CoroutineScope by CoroutineScope(ui
             return job?.isActive ?: false
         }
 
-    suspend fun update(params: Params? = null): Boolean {
-        val value = executeAsync(params) {
-            getValue(params)
-        }
-
-        return stateFlow.compareAndSet(stateFlow.value, value)
-    }
-
-    fun update(
-        params: Params? = null,
-        onUpdated: ((updatedValue: T) -> Unit)? = null
-    ) {
-        launch {
-            if (update(params)) onUpdated?.invoke(stateFlow.value)
-        }
-    }
-
-    protected abstract suspend fun getValue(params: Params?): T
 //
 //    fun toStateFlow(
 //        params: Params?,
@@ -68,41 +50,41 @@ abstract class StateFlowUseCase<T, Params> : CoroutineScope by CoroutineScope(ui
 //        )
 //    }
 
-    fun init(initialValue: T): StateFlow<T> {
-        if (this::stateFlow.isInitialized) {
+
+//    suspend fun init(params: Params? = null): StateFlow<T> = coroutineScope {
+//        val initialValue = executeAsync(params) {
+//            getValue(params)
+//        }
+//
+//        init(initialValue)
+//    }
+
+    fun isInitialized(): Boolean {
+        return this::stateFlow.isInitialized
+    }
+
+    protected fun init(initialValue: T): StateFlow<T> {
+        if (isInitialized()) {
             Logger.logErr("Already initialized!")
         } else {
-            MutableStateFlow(initialValue)
-                .also { stateFlow = it }
+            stateFlow = provideStateFlow(initialValue)
         }
 
         return stateFlow
     }
 
-    suspend fun init(params: Params? = null): StateFlow<T> = coroutineScope {
-        val initialValue = executeAsync(params) {
-            getValue(params)
-        }
-
-        init(initialValue)
+    fun get(): StateFlow<T> {
+        return if (isInitialized()) {
+            stateFlow
+        } else throw IllegalStateException("Use case not initialized!")
     }
 
-    fun initAndUpdate(
-        initialValue: T,
+    protected abstract fun provideStateFlow(initialValue: T): StateFlow<T>
+
+    protected suspend fun doWorkDeferred(
         params: Params? = null,
-        onUpdated: ((updatedValue: T) -> Unit)? = null
-    ): StateFlow<T> {
-        return init(initialValue).also {
-            update(params, onUpdated)
-        }
-    }
-
-    operator fun invoke(initialValue: T): StateFlow<T> {
-        return init(initialValue)
-    }
-
-    protected suspend fun doWorkDeferred(params: Params? = null, block: suspend (Params?) -> T)
-            : Deferred<T> = coroutineScope {
+        block: suspend (Params?) -> T
+    ): Deferred<T> = coroutineScope {
         async(asyncJob + defaultDispatcher) {
             block(params)
         }.also { job = it }
@@ -112,20 +94,3 @@ abstract class StateFlowUseCase<T, Params> : CoroutineScope by CoroutineScope(ui
         return doWorkDeferred(params, block).await()
     }
 }
-
-sealed class Result<T> {
-
-    abstract val value: T?
-
-    class Loading<T>(
-        override val value: T? = null
-    ) : Result<T>()
-
-    class Error<T>(
-        val throwable: Throwable? = null,
-        override val value: T? = null,
-    ) : Result<T>()
-
-    class Success<T>(override val value: T) : Result<T>()
-}
-

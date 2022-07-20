@@ -1,4 +1,4 @@
-package com.merseyside.merseyLib.kotlin
+package com.merseyside.merseyLib.kotlin.logger
 
 import kotlin.native.concurrent.ThreadLocal
 
@@ -20,8 +20,8 @@ expect object Logger {
     fun logWtf(tag: Any?, msg: Any? = "wtf?")
     fun logWtf(msg: Any? = "wtf?")
 
-    internal fun adoptTag(tag: Any?): String
-    internal fun adoptMsg(msg: Any?): String
+    fun adoptTag(tag: Any?): String
+    fun adoptMsg(msg: Any?): String
 
     val TAG: String
 }
