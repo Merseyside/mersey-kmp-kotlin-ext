@@ -1,6 +1,6 @@
 package com.merseyside.merseyLib.kotlin.coroutines
 
-import com.merseyside.merseyLib.kotlin.Logger
+import com.merseyside.merseyLib.kotlin.logger.Logger
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
 import kotlinx.coroutines.*
 

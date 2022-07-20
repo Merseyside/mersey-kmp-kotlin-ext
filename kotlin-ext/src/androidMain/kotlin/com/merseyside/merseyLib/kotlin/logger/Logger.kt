@@ -1,4 +1,4 @@
-package com.merseyside.merseyLib.kotlin
+package com.merseyside.merseyLib.kotlin.logger
 
 import android.util.Log
 
@@ -69,7 +69,7 @@ actual object Logger {
         return isEnabled && isDebug
     }
 
-    internal actual fun adoptTag(tag: Any?): String {
+    actual fun adoptTag(tag: Any?): String {
 
         return if (tag != null) {
             val strTag = if (tag is String) {
@@ -84,7 +84,7 @@ actual object Logger {
         }
     }
 
-    internal actual fun adoptMsg(msg: Any?): String {
+    actual fun adoptMsg(msg: Any?): String {
         return when (msg) {
             null -> { "null" }
 

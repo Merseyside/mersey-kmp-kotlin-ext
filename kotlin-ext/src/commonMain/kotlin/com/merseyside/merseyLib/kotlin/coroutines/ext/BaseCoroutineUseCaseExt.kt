@@ -1,8 +1,7 @@
 package com.merseyside.merseyLib.kotlin.coroutines.ext
 
 import com.merseyside.merseyLib.kotlin.coroutines.BaseCoroutineUseCase
-import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
-import com.merseyside.merseyLib.kotlin.coroutines.flow.Result
+import com.merseyside.merseyLib.kotlin.entity.Result
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

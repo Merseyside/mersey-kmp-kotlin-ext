@@ -1,7 +1,9 @@
 package com.merseyside.merseyLib.kotlin.coroutines.utils
 
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 
 inline fun <Params, Result> requireParams(
     params: Params?,
@@ -13,9 +15,19 @@ inline fun <Params, Result> requireParams(
 }
 
 suspend fun debounce(
-    waitMs: Long = 300L,
+    waitMs: Long,
     destinationFunction: suspend () -> Unit
 ) {
     delay(waitMs)
     destinationFunction.invoke()
+}
+
+suspend fun repeatInfinite(
+    delay: Long = 0,
+    repeatBlock: suspend () -> Unit
+) = coroutineScope {
+    while (isActive) {
+        delay(delay)
+        repeatBlock()
+    }
 }

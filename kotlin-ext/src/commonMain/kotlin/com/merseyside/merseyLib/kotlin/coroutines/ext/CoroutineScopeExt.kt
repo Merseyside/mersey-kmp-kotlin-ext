@@ -1,11 +1,8 @@
 package com.merseyside.merseyLib.kotlin.coroutines.ext
 
-import com.merseyside.merseyLib.kotlin.Logger
+import com.merseyside.merseyLib.kotlin.logger.Logger
 import com.merseyside.merseyLib.kotlin.coroutines.BaseCoroutineUseCase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 fun <R1, P1, R2, P2> CoroutineScope.zipUseCases(
     c1: BaseCoroutineUseCase<R1, P1>,
@@ -13,7 +10,7 @@ fun <R1, P1, R2, P2> CoroutineScope.zipUseCases(
     p1: P1? = null,
     p2: P2? = null,
     onError: (error: Throwable) -> Unit = {},
-    onComplete: (R1, R2) -> Unit = { _, _  -> },
+    onComplete: (R1, R2) -> Unit = { _, _ -> },
 ): Job {
     return launch {
         val deferred1 = async { c1(p1) }
@@ -36,7 +33,7 @@ fun <R1, P1, R2, P2, R3, P3> CoroutineScope.zipUseCases(
     p2: P2? = null,
     p3: P3? = null,
     onError: (error: Throwable) -> Unit = {},
-    onComplete: (R1, R2, R3) -> Unit = { _, _, _  -> },
+    onComplete: (R1, R2, R3) -> Unit = { _, _, _ -> },
 ): Job {
     return launch {
         val deferred1 = async { c1(p1) }
