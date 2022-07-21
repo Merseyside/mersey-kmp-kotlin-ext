@@ -8,7 +8,7 @@ dependencyResolutionManagement {
         google()
     }
 
-    val catalogVersions = "1.5.3"
+    val catalogVersions = "1.5.5"
     val group = "io.github.merseyside"
     versionCatalogs {
         val common by creating {
