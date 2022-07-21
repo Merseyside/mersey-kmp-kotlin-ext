@@ -16,12 +16,12 @@ inline fun <reified T> T.logMsg(
     return this.also { loggerLog(tag, message) }
 }
 
-fun <T> T?.log(
+fun <T> T.log(
     tag: Any = Logger.TAG,
     prefix: Any? = null,
     suffix: Any? = null,
     msgBlock: T?.() -> T?
-): T? {
+): T {
     val msg = "${prefix ?: ""} ${Logger.adoptMsg(msgBlock(this))} ${suffix ?: ""}"
     Logger.log(tag, msg)
 
