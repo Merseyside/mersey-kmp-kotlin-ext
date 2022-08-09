@@ -37,7 +37,7 @@ abstract class StateFlowUseCase<T, Params>(
         return this::stateFlow.isInitialized
     }
 
-    open fun init(initialValue: T): StateFlow<T> {
+    fun init(initialValue: T): StateFlow<T> {
         if (isInitialized()) {
             Logger.logErr("Already initialized!")
         } else {
