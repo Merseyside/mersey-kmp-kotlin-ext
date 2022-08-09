@@ -13,45 +13,53 @@ abstract class MutableStateFlowUseCase<T, Params>(
 
     private lateinit var mutStateFlow: MutableStateFlow<T>
 
+    override var value: T
+        get() = stateFlow.value
+        set(value) {
+            mutStateFlow.value = value
+        }
+
     protected abstract suspend fun updateWithParams(params: Params?): T
 
     final override fun provideStateFlow(initialValue: T): MutableStateFlow<T> {
         return MutableStateFlow(initialValue).also { mutStateFlow = it }
     }
 
-    suspend fun update(params: Params? = null): T {
-        val value = executeAsync(params) {
-            updateWithParams(params)
+    open suspend fun update(params: Params? = null): T {
+        val value = execute(params) {
+            updateWithParams(it)
         }
 
-        return mutStateFlow.updateAndGet { value }
+        return updateValue(value)
     }
 
-    fun update(
+    open fun update(
         coroutineScope: CoroutineScope = this.coroutineScope,
         params: Params? = null,
-        onUpdated: (T) -> Unit = {},
         onError: (Throwable) -> Unit = {}
     ) {
         coroutineScope.launch {
             try {
-                onUpdated(update(params))
+                update(params)
             } catch(e: Throwable) {
                 onError(e)
             }
         }
     }
 
-    fun initAndUpdate(
+    open fun initAndUpdate(
         coroutineScope: CoroutineScope = this.coroutineScope,
         initialValue: T,
         params: Params? = null,
-        onUpdated: (T) -> Unit,
         onError: (Throwable) -> Unit = {}
     ): StateFlow<T> {
         return init(initialValue).also {
-            update(coroutineScope, params, onUpdated, onError)
+            update(coroutineScope, params, onError)
         }
+    }
+
+    open fun updateValue(value: T): T {
+        return mutStateFlow.updateAndGet { value }
     }
 
     operator fun invoke(initialValue: T): StateFlow<T> {
