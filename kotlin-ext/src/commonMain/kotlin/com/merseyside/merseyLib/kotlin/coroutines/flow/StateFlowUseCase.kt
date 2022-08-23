@@ -29,9 +29,7 @@ abstract class StateFlowUseCase<T, Params>(
         }
 
     val isActive: Boolean
-        get() {
-            return job?.isActive ?: false
-        }
+        get() = job?.isActive ?: false
 
     protected open fun isInitialized(): Boolean {
         return this::stateFlow.isInitialized

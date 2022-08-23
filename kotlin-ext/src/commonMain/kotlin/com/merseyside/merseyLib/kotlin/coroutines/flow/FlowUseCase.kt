@@ -1,9 +1,10 @@
 package com.merseyside.merseyLib.kotlin.coroutines.flow
 
-import com.merseyside.merseyLib.kotlin.logger.Logger
-import com.merseyside.merseyLib.kotlin.coroutines.utils.defaultDispatcher
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
+import com.merseyside.merseyLib.kotlin.coroutines.utils.defaultDispatcher
 import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
+import com.merseyside.merseyLib.kotlin.logger.Logger
+import com.merseyside.merseyLib.kotlin.logger.log
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -23,7 +24,7 @@ abstract class FlowUseCase<T, Params> {
         }
 
     @ExperimentalCoroutinesApi
-    protected abstract fun doWork(params: Params?): Flow<T>
+    protected abstract fun getFlow(params: Params?): Flow<T>
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun observe(
@@ -32,8 +33,7 @@ abstract class FlowUseCase<T, Params> {
         onEmit: (T) -> Unit,
         onError: (Throwable) -> Unit = {}
     ): Job {
-        val flow = doWork(params)
-            .onEach { data -> onEmit.invoke(data) }
+        val flow = getFlow(params)
             .catch { cause ->
                 when (cause) {
                     is CancellationException -> Logger.log(
@@ -52,7 +52,9 @@ abstract class FlowUseCase<T, Params> {
             }.flowOn(defaultDispatcher)
 
         return coroutineScope.launch {
-            flow.collect()
+            flow.collect { data ->
+                onEmit(data).log("emit111")
+            }
         }.also { job = it }
     }
 
@@ -63,6 +65,6 @@ abstract class FlowUseCase<T, Params> {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(params: Params? = null): Flow<T> {
-        return doWork(params)
+        return getFlow(params)
     }
 }
