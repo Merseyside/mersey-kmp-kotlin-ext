@@ -161,6 +161,33 @@ fun <T> List<T>.merge(vararg lists: List<T>): List<T> {
     return list
 }
 
+/**
+ * Moves item from old position to new position
+ * @return moved item
+ */
+fun <T> MutableList<T>.move(oldPosition: Int, newPosition: Int): T {
+    val item = get(oldPosition)
+    removeAt(oldPosition)
+    add(newPosition, item)
+    return item
+}
+
+fun <T> MutableList<T>.move(item: T, newPosition: Int): T {
+    val oldPosition = indexOf(item)
+    removeAt(oldPosition)
+    add(newPosition, item)
+    return item
+}
+
+fun <T1, T2> Iterable<T1>.subtractBy(
+    other: Iterable<T2>,
+    predicate: (first: T1, second: T2) -> Boolean
+): Set<T1> {
+    return filter { first ->
+        other.find { second -> predicate(first, second) } == null
+    }.toSet()
+}
+
 @Throws(NullPointerException::class)
 fun <T> Collection<T>.firstNotNull(): T {
     return find { it != null } ?: throw NullPointerException("No non-null items found!")
