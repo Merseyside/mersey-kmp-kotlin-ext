@@ -1,4 +1,4 @@
-package com.merseyside.merseyLib.kotlin
+package com.merseyside.merseyLib.kotlin.utils
 
 import com.merseyside.merseyLib.kotlin.extensions.firstNotNull
 

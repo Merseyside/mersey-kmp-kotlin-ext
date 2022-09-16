@@ -193,6 +193,9 @@ fun <T> Collection<T>.firstNotNull(): T {
     return find { it != null } ?: throw NullPointerException("No non-null items found!")
 }
 
+fun <T> List<T>.isEqualsIgnoreOrder(other: List<T>) = this.size == other.size &&
+        this.toSet() == other.toSet()
+
 inline fun <reified R> Iterable<R>.findIsInstance(): R {
     return filterIsInstance<R>().first()
 }

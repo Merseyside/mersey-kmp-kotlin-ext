@@ -1,4 +1,4 @@
-package com.merseyside.merseyLib.kotlin
+package com.merseyside.merseyLib.kotlin.observable
 
 abstract class ObservableField<T> {
     abstract val value: T?
@@ -43,7 +43,7 @@ open class MutableObservableField<T>(initialValue: T? = null) : ObservableField<
         }
 }
 
-class SingleObservableField<T>(initialValue: T? = null) : MutableObservableField<T>() {
+open class SingleObservableField<T>(initialValue: T? = null) : MutableObservableField<T>() {
     override var value: T? = initialValue
         get() = field.also { value = null }
         set(value) {
@@ -52,6 +52,12 @@ class SingleObservableField<T>(initialValue: T? = null) : MutableObservableField
                 notifyObservers()
             }
         }
+}
+
+class SingleObservableEvent: SingleObservableField<Unit>() {
+    fun call() {
+        value = Unit
+    }
 }
 
 class Disposable<T>(

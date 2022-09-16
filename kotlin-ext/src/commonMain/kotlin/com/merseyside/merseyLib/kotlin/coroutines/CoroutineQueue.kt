@@ -77,7 +77,6 @@ class CoroutineQueue<Result, Args>(
             }
 
             onPostExecute()
-            awaitCancellation()
         }.also { job = it }
     }
 
