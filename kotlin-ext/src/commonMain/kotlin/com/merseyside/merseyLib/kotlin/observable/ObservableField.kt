@@ -35,10 +35,11 @@ open class MutableObservableField<T>(initialValue: T? = null) : ObservableField<
 
     override var value: T? = initialValue
         set(value) {
-            field = value
-
-            if (value != null) {
-                notifyObservers()
+            if (field != value) {
+                field = value
+                if (value != null) {
+                    notifyObservers()
+                }
             }
         }
 }
