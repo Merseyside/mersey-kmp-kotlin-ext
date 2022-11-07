@@ -10,6 +10,8 @@ class CoroutineQueue<Result, Args>(
     var scope: CoroutineScope = CoroutineScope(uiDispatcher)
 ) : ILogger {
 
+    var fallOnException: Boolean = false
+
     private val asyncJob = SupervisorJob()
     private val workBuffer = ArrayDeque<Pair<suspend () -> Result, Args?>>()
     private var job: Job? = null
@@ -71,9 +73,9 @@ class CoroutineQueue<Result, Args>(
             } catch (exception: NoParamsException) {
                 throw exception
             } catch (throwable: Throwable) {
-                Logger.logErr(throwable)
-                onError(throwable)
-                throwable.printStackTrace()
+                Logger.logErr("CoroutineQueue", throwable)
+                if (fallOnException) throw throwable
+                else onError(throwable)
             }
 
             onPostExecute()

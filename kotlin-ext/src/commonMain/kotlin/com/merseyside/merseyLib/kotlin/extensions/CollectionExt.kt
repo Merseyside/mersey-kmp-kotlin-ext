@@ -2,7 +2,6 @@ package com.merseyside.merseyLib.kotlin.extensions
 
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
-import kotlin.reflect.KClass
 
 @OptIn(ExperimentalContracts::class)
 fun Collection<*>?.isNotNullAndEmpty(): Boolean {
@@ -13,7 +12,7 @@ fun Collection<*>?.isNotNullAndEmpty(): Boolean {
     return this != null && this.isNotEmpty()
 }
 
-inline fun <T, R> List<T>?.isNotNullAndEmpty(block: List<T>.() -> R): R? {
+inline fun <T, R> Collection<T>?.isNotNullAndEmpty(block: Collection<T>.() -> R): R? {
     return if (this.isNotNullAndEmpty()) {
         block()
     } else {
@@ -21,32 +20,28 @@ inline fun <T, R> List<T>?.isNotNullAndEmpty(block: List<T>.() -> R): R? {
     }
 }
 
-fun <T> List<T>.removeEqualItems(): List<T> {
-    return this.toSet().toList()
-}
-
-fun <T> List<T>.unique(
+fun <T> Collection<T>.unique(
     predicate: (obj1: T, obj2: T) -> Boolean = { obj1, obj2 -> obj1 == obj2 }
-): List<T> {
+): Set<T> {
     return if (isNotEmpty()) {
-        val uniqueList = ArrayList<T>()
+        val uniqueList: MutableSet<T> = mutableSetOf()
 
         forEachIndexed { index, value ->
             if (index.isZero()) {
                 uniqueList.add(value)
             } else {
                 val found = uniqueList.find { predicate.invoke(it, value) }
-                if (found == null) uniqueList.add(0, value)
+                if (found == null) uniqueList.add(value)
             }
         }
 
-        uniqueList.reversed()
+        uniqueList.reversed().toSet()
     } else {
-        this
+        this.toSet()
     }
 }
 
-fun <T : Any> MutableList<T>.remove(predicate: (T) -> Boolean): Boolean {
+fun <T : Any> MutableCollection<T>.remove(predicate: (T) -> Boolean): Boolean {
     forEach {
         if (predicate(it)) {
             return remove(it)
@@ -56,7 +51,7 @@ fun <T : Any> MutableList<T>.remove(predicate: (T) -> Boolean): Boolean {
     return false
 }
 
-fun <T: Any, R : Comparable<R>> List<T>.minByNullable(selector: (T) -> R?): T? {
+fun <T, R : Comparable<R>> Collection<T>.minByNullable(selector: (T) -> R?): T? {
 
     var minValue: R? = null
     var minElement: T? = null
@@ -80,42 +75,42 @@ fun <T: Any, R : Comparable<R>> List<T>.minByNullable(selector: (T) -> R?): T? {
     return minElement
 }
 
-inline fun <T> List<T?>.forEachNotNull(action: (T) -> Unit) {
+inline fun <T> Iterable<T?>.forEachNotNull(action: (T) -> Unit) {
     return this.filterNotNull().forEach(action)
 }
 
-fun List<Boolean>.forEachIsTrue(): Boolean {
+fun Iterable<Boolean>.forEachIsTrue(): Boolean {
     return this.find { !it } != null
 }
 
-fun <T: Any> List<List<T>>.union(): List<T> {
+fun <T> Collection<Collection<T>>.union(): Set<T> {
     val hasEmptyList = find { it.isEmpty() } != null
 
-    if (hasEmptyList || isEmpty()) return emptyList()
-    if (size == 1) return first()
+    if (hasEmptyList || isEmpty()) return emptySet()
+    if (size == 1) return first().toSet()
 
-    var resultList = first().toSet()
+    var resultList: Set<T> = setOf()
 
-    (1 until size).forEach { index ->
-        resultList = resultList.union(get(index))
+    forEach {
+        resultList = resultList.union(it)
     }
 
-    return resultList.toList()
+    return resultList
 }
 
-fun <T: Any> List<List<T>>.intersect(): List<T> {
+fun <T> Collection<Collection<T>>.intersect(): Set<T> {
     val hasEmptyList = find { it.isEmpty() } != null
 
-    if (hasEmptyList || isEmpty()) return emptyList()
-    if (size == 1) return first()
+    if (hasEmptyList || isEmpty()) return emptySet()
+    if (size == 1) return first().toSet()
 
     var resultList = first().toSet()
 
     (1 until size).forEach { index ->
-        resultList = resultList.intersect(get(index))
+        resultList = resultList.intersect(elementAt(index).toSet())
     }
 
-    return resultList.toList()
+    return resultList
 }
 
 inline fun <K, V> Map<out K, V>.forEachEntry(action: (key: K, value: V) -> Unit) {
@@ -150,7 +145,7 @@ inline fun <T> Iterable<T>.separate(predicate: (T) -> Boolean): Pair<List<T>, Li
     return trueList to falseList
 }
 
-fun <T> List<T>.merge(vararg lists: List<T>): List<T> {
+fun <T> Collection<T>.merge(vararg lists: Collection<T>): List<T> {
     if (lists.isEmpty()) throw IllegalArgumentException("Pass at least one list!")
     val list: MutableList<T> = ArrayList(this)
 
@@ -193,8 +188,9 @@ fun <T> Collection<T>.firstNotNull(): T {
     return find { it != null } ?: throw NullPointerException("No non-null items found!")
 }
 
-fun <T> List<T>.isEqualsIgnoreOrder(other: List<T>) = this.size == other.size &&
-        this.toSet() == other.toSet()
+fun <T> Collection<T>.isEqualsIgnoreOrder(other: Collection<T>): Boolean {
+    return this.size == other.size && this.toSet() == other.toSet()
+}
 
 inline fun <reified R> Iterable<R>.findIsInstance(): R {
     return filterIsInstance<R>().first()

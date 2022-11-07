@@ -17,3 +17,13 @@ inline fun <T1: Any, T2: Any, T3: Any, R: Any> safeLet(p1: T1?, p2: T2?, p3: T3?
 fun <T> firstNotNull(vararg data: T): T {
     return data.toList().firstNotNull()
 }
+
+fun <R> Boolean.ifTrue(block: () -> R): R? {
+    return if (this) block()
+    else null
+}
+
+fun <R> Boolean.ifFalse(block: () -> R): R? {
+    return if (!this) block()
+    else null
+}
