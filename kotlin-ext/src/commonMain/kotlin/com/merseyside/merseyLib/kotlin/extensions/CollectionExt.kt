@@ -12,7 +12,7 @@ fun Collection<*>?.isNotNullAndEmpty(): Boolean {
     return this != null && this.isNotEmpty()
 }
 
-inline fun <T, R> Collection<T>?.isNotNullAndEmpty(block: Collection<T>.() -> R): R? {
+inline fun <M : Collection<T>, T, R> M?.isNotNullAndEmpty(block: M.() -> R): R? {
     return if (this.isNotNullAndEmpty()) {
         block()
     } else {
