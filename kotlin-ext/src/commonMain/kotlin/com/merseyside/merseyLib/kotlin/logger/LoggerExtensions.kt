@@ -3,6 +3,10 @@ package com.merseyside.merseyLib.kotlin.logger
 import com.merseyside.merseyLib.kotlin.logger.Logger.log as loggerLog
 
 inline fun <reified T> T.log(tag: Any = T::class.simpleName ?: Logger.TAG, prefix: Any? = null, suffix: Any? = null): T {
+    return logSimpleTag(tag, prefix, suffix)
+}
+
+fun <T> T.logSimpleTag(tag: Any = Logger.TAG, prefix: Any? = null, suffix: Any? = null): T {
     val msg = "${prefix ?: ""} ${Logger.adoptMsg(this)} ${suffix ?: ""}"
     Logger.log(tag, msg)
 
@@ -20,7 +24,7 @@ fun <T> T.log(
     tag: Any = Logger.TAG,
     prefix: Any? = null,
     suffix: Any? = null,
-    msgBlock: T?.() -> T?
+    msgBlock: T?.() -> String
 ): T {
     val msg = "${prefix ?: ""} ${Logger.adoptMsg(msgBlock(this))} ${suffix ?: ""}"
     Logger.log(tag, msg)

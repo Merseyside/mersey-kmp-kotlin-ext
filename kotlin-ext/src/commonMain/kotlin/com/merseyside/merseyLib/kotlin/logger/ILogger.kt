@@ -8,6 +8,6 @@ interface ILogger {
     }
 
     fun <T> T.log(prefix: Any? = null, suffix: Any? = null): T {
-        return log(tag, prefix, suffix) { this }
+        return logSimpleTag(tag, prefix, suffix)
     }
 }

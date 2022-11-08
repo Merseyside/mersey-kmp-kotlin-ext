@@ -1,4 +1,4 @@
-package com.merseyside.merseyLib.kotlin
+package com.merseyside.merseyLib.kotlin.utils
 
 import kotlin.math.max
 import kotlin.math.min

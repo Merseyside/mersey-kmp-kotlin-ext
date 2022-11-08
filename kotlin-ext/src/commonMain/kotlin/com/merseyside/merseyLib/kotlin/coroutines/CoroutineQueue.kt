@@ -6,21 +6,21 @@ import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import com.merseyside.merseyLib.kotlin.logger.ILogger
 import kotlinx.coroutines.*
 
-class CoroutineWorkManager<Result, Args>(
-    private val mode: WorkerMode = WorkerMode.SEQUENTIAL,
+class CoroutineQueue<Result, Args>(
     var scope: CoroutineScope = CoroutineScope(uiDispatcher)
-): ILogger {
-    enum class WorkerMode { SEQUENTIAL, PARALLEL }
+) : ILogger {
+
+    var fallOnException: Boolean = false
 
     private val asyncJob = SupervisorJob()
     private val workBuffer = ArrayDeque<Pair<suspend () -> Result, Args?>>()
-    private val jobs: MutableList<Job> = ArrayList()
+    private var job: Job? = null
 
     val isActive: Boolean
-        get() = jobs.isNotEmpty()
+        get() = job?.isActive ?: false
 
     var onPreExecute: () -> Unit = {}
-    var onComplete: (Result, Args?) -> Unit = { _, _ ->}
+    var onComplete: (Result, Args?) -> Unit = { _, _ -> }
     var onError: (Throwable) -> Unit = {}
     var onPostExecute: () -> Unit = {}
 
@@ -39,7 +39,7 @@ class CoroutineWorkManager<Result, Args>(
     fun addAndExecute(args: Args?, block: suspend () -> Result): Job? {
         add(args, resultProvider = block)
 
-        return if (mode == WorkerMode.PARALLEL || !isActive) {
+        return if (!isActive) {
             execute()
         } else null
     }
@@ -48,10 +48,12 @@ class CoroutineWorkManager<Result, Args>(
         coroutineScope: CoroutineScope = scope,
         cancelIfAlreadyLaunched: Boolean = false
     ): Job? {
-        if (!cancelIfAlreadyLaunched && mode == WorkerMode.SEQUENTIAL) {
+        if (!cancelIfAlreadyLaunched) {
             if (isActive) {
-                Logger.logErr(this, "Already launched! Cancel before current job " +
-                        "before call execute method.")
+                Logger.logErr(
+                    this, "Already launched! Cancel before current job " +
+                            "before call execute method."
+                )
                 return null
             }
         }
@@ -65,64 +67,40 @@ class CoroutineWorkManager<Result, Args>(
             onPreExecute()
 
             try {
-                if (mode == WorkerMode.SEQUENTIAL) {
-                    runSequentialWork()
-                } else {
-                    runParallelWork()
-                }
-
+                runSequentialWork()
             } catch (exception: CancellationException) {
-                Logger.logErr(this@CoroutineWorkManager, "The coroutine had canceled")
+                Logger.logErr(this@CoroutineQueue, "The coroutine had canceled")
             } catch (exception: NoParamsException) {
                 throw exception
             } catch (throwable: Throwable) {
-                Logger.logErr(throwable)
-                onError(throwable)
-                throwable.printStackTrace()
+                Logger.logErr("CoroutineQueue", throwable)
+                if (fallOnException) throw throwable
+                else onError(throwable)
             }
 
             onPostExecute()
-        }
+        }.also { job = it }
     }
 
     private suspend fun runSequentialWork() = coroutineScope {
-        while(isActive && workBuffer.isNotEmpty()) {
+        while (isActive && workBuffer.isNotEmpty()) {
             val workPair = workBuffer.first()
             val deferred = startNewJobAsync(workPair.first)
-            completeJob(awaitForResult(deferred), workPair.second)
+            completeJob(deferred.await(), workPair.second)
 
             workBuffer.removeFirst()
         }
     }
 
-    private suspend fun runParallelWork() = coroutineScope {
-        workBuffer.forEach { (resultProvider, args) ->
-            launch {
-                val deferred = startNewJobAsync(resultProvider)
-                completeJob(awaitForResult(deferred), args)
-            }
-        }
-
-        workBuffer.clear()
-    }
-
     private suspend fun startNewJobAsync(resultProvider: suspend () -> Result): Deferred<Result> {
-        val deferred = doWorkAsync(resultProvider)
-        jobs.add(deferred)
-        return deferred
-    }
-
-    private suspend fun awaitForResult(deferred: Deferred<Result>): Result {
-        return deferred.await().also {
-            jobs.remove(deferred)
-        }
+        return doWorkAsync(resultProvider)
     }
 
     private fun completeJob(result: Result, args: Args?) {
         onComplete(result, args)
     }
 
-    private suspend fun doWorkAsync(block: suspend () -> Result): Deferred<Result> = coroutineScope {
+    private suspend fun doWorkAsync(block: suspend () -> Result) = coroutineScope {
         async(asyncJob) { block() }
     }
 
