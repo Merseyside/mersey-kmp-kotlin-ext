@@ -1,5 +1,3 @@
-@file:Suppress("UNCHECKED_CAST")
-
 package com.merseyside.merseyLib.kotlin.observable
 
 private fun <R> combine(
@@ -26,6 +24,7 @@ private fun <R> combine(
 
 }
 
+@Suppress("UNCHECKED_CAST")
 fun <T1, T2, R> combineFields(
     of1: ObservableField<T1>,
     of2: ObservableField<T2>,
