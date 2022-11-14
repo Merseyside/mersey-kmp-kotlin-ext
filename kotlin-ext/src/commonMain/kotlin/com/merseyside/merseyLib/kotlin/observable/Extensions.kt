@@ -12,8 +12,7 @@ private fun <R> combine(
     val mutableObservableField = MutableObservableField<R>()
 
     val triggerObserver: (Any?) -> Unit = {
-        val result = transform(getAllValues())
-        mutableObservableField.value = result
+        mutableObservableField.value = transform(getAllValues())
     }
 
     fields.forEach { field ->

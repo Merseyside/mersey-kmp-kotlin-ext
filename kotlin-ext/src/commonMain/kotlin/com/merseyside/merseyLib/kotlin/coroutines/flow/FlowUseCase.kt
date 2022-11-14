@@ -53,7 +53,7 @@ abstract class FlowUseCase<T, Params> {
 
         return coroutineScope.launch {
             flow.collect { data ->
-                onEmit(data).log("emit111")
+                onEmit(data)
             }
         }.also { job = it }
     }

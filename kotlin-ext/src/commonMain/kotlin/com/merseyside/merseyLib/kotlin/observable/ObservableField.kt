@@ -1,64 +1,33 @@
 package com.merseyside.merseyLib.kotlin.observable
 
-abstract class ObservableField<T> {
-    abstract val value: T?
+import com.merseyside.merseyLib.kotlin.logger.ILogger
 
-    protected val observerList: MutableList<(T) -> Unit> = mutableListOf()
+expect open class ObservableField<T> constructor(): ILogger {
+    open var value: T?
 
-    fun observe(block: (T) -> Unit): Disposable<T> {
-        observerList.add(block)
-        value?.let {
-            block(it)
-        }
+    protected val observerList: MutableList<(T) -> Unit>
 
-        return Disposable(this, block)
-    }
+    fun observe(block: (T) -> Unit): Disposable<T>
 
-    fun removeObserver(block: (T) -> Unit): Boolean {
-        return observerList.remove(block)
-    }
+    fun removeObserver(block: (T) -> Unit): Boolean
 
-    protected fun notifyObservers() {
-        value?.let {
-            if (observerList.isNotEmpty()) {
-                observerList.forEach { observer -> observer(it) }
-            }
-        }
-    }
+    protected fun notifyObservers()
 
-    fun removeAllObservers() {
-        observerList.clear()
-    }
+    fun removeAllObservers()
 }
 
-open class MutableObservableField<T>(initialValue: T? = null) : ObservableField<T>() {
+expect open class MutableObservableField<T>(initialValue: T? = null) : ObservableField<T> {
 
-    override var value: T? = initialValue
-        set(value) {
-            if (field != value) {
-                field = value
-                if (value != null) {
-                    notifyObservers()
-                }
-            }
-        }
+    override var value: T?
 }
 
-open class SingleObservableField<T>(initialValue: T? = null) : MutableObservableField<T>() {
-    override var value: T? = initialValue
-        get() = field.also { value = null }
-        set(value) {
-            field = value
-            if (value != null) {
-                notifyObservers()
-            }
-        }
+expect open class SingleObservableField<T>(initialValue: T? = null) : MutableObservableField<T> {
+
+    override var value: T?
 }
 
-class SingleObservableEvent: SingleObservableField<Unit>() {
-    fun call() {
-        value = Unit
-    }
+expect class SingleObservableEvent(): SingleObservableField<Unit> {
+    fun call()
 }
 
 class Disposable<T>(
