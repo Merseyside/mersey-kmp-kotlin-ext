@@ -2,8 +2,14 @@ package com.merseyside.merseyLib.kotlin.observable
 
 import com.merseyside.merseyLib.kotlin.logger.ILogger
 
-actual open class ObservableField<T> : ILogger {
-    actual open val value: T? = null
+actual abstract class ObservableField<T> actual constructor(initialValue: T?): ILogger {
+    actual open var value: T? = initialValue
+        internal set(value) {
+            if (field != value) {
+                field = value
+                notifyObservers()
+            }
+        }
 
     protected actual val observerList: MutableList<(T) -> Unit> = mutableListOf()
 
@@ -37,29 +43,17 @@ actual open class ObservableField<T> : ILogger {
 }
 
 actual open class MutableObservableField<T> actual constructor(initialValue: T?) :
-    ObservableField<T>() {
-
-    actual override var value: T? = initialValue
-        set(value) {
-            if (field != value) {
-                field = value
-                if (value != null) {
-                    notifyObservers()
-                }
-            }
-        }
-}
+    ObservableField<T>(initialValue) {
+    override var value: T?
+        get() = super.value
+        public set(v) { super.value = v }
+    }
 
 actual open class SingleObservableField<T> actual constructor(initialValue: T?) :
     MutableObservableField<T>(initialValue) {
     actual override var value: T? = initialValue
+        set(v) { super.value = v }
         get() = field.also { value = null }
-        set(value) {
-            field = value
-            if (value != null) {
-                notifyObservers()
-            }
-        }
 }
 
 actual class SingleObservableEvent : SingleObservableField<Unit>(null) {

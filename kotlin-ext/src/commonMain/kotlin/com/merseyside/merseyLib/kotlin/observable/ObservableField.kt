@@ -2,7 +2,7 @@ package com.merseyside.merseyLib.kotlin.observable
 
 import com.merseyside.merseyLib.kotlin.logger.ILogger
 
-expect open class ObservableField<T> constructor(): ILogger {
+expect abstract class ObservableField<T> constructor(initialValue: T?): ILogger {
     open var value: T?
 
     protected val observerList: MutableList<(T) -> Unit>
@@ -16,10 +16,7 @@ expect open class ObservableField<T> constructor(): ILogger {
     fun removeAllObservers()
 }
 
-expect open class MutableObservableField<T>(initialValue: T? = null) : ObservableField<T> {
-
-    override var value: T?
-}
+expect open class MutableObservableField<T>(initialValue: T? = null) : ObservableField<T>
 
 expect open class SingleObservableField<T>(initialValue: T? = null) : MutableObservableField<T> {
 

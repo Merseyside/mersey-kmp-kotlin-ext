@@ -1,14 +1,25 @@
 package com.merseyside.merseyLib.kotlin.observable
 
+import androidx.databinding.Bindable
 import androidx.databinding.Observable
+import com.merseyside.merseyLib.kotlin.BR
 import com.merseyside.merseyLib.kotlin.extensions.isNotZero
 import com.merseyside.merseyLib.kotlin.logger.ILogger
 import androidx.databinding.BaseObservable as AndroidObservable
 
-actual open class ObservableField<T> actual constructor() : AndroidObservable(), ILogger {
-    actual open var value: T? = null
+actual abstract class ObservableField<T> actual constructor(initialValue: T?) : AndroidObservable(),
+    ILogger {
+    actual open var value: T? = initialValue
+        @Bindable get
+        internal set(value) {
+            if (field != value) {
+                field = value
+                notifyPropertyChanged(BR.value)
+                notifyObservers()
+            }
+        }
 
-    constructor(vararg dependencies: Observable): this() {
+    constructor(vararg dependencies: Observable) : this(null) {
         if (dependencies.size.isNotZero()) {
             val callback = DependencyCallback()
 
@@ -56,30 +67,32 @@ actual open class ObservableField<T> actual constructor() : AndroidObservable(),
 }
 
 actual open class MutableObservableField<T> actual constructor(initialValue: T?) :
-    ObservableField<T>() {
+    ObservableField<T>(initialValue) {
 
-    actual override var value: T? = initialValue
-        set(value) {
-
-            if (field != value) {
-                field = value
-                if (value != null) {
-                    notifyObservers()
-                }
-            }
+    override var value: T?
+        @Bindable get() = super.value
+        @Bindable public set(v) {
+            super.value = v
         }
+
+    @JvmName("get")
+    fun get(): T? {
+        return value
+    }
+
+    @JvmName("set")
+    fun set(value: T?) {
+        this.value = value
+    }
 }
 
 actual open class SingleObservableField<T> actual constructor(initialValue: T?) :
     MutableObservableField<T>(initialValue) {
-    actual override var value: T? = initialValue
-        get() = field.also { value = null }
-        set(value) {
-            field = value
-            if (value != null) {
-                notifyObservers()
-            }
+    actual override var value: T?
+        set(v) {
+            super.value = v
         }
+        get() = super.value.also { value = null }
 }
 
 actual class SingleObservableEvent : SingleObservableField<Unit>(null) {
