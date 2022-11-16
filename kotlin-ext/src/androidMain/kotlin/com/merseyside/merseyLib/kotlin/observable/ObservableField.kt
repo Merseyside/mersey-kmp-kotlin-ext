@@ -74,25 +74,15 @@ actual open class MutableObservableField<T> actual constructor(initialValue: T?)
         @Bindable public set(v) {
             super.value = v
         }
-
-    @JvmName("get")
-    fun get(): T? {
-        return value
-    }
-
-    @JvmName("set")
-    fun set(value: T?) {
-        this.value = value
-    }
 }
 
 actual open class SingleObservableField<T> actual constructor(initialValue: T?) :
     MutableObservableField<T>(initialValue) {
     actual override var value: T?
-        set(v) {
+        @Bindable set(v) {
             super.value = v
         }
-        get() = super.value.also { value = null }
+        @Bindable get() = super.value.also { value = null }
 }
 
 actual class SingleObservableEvent : SingleObservableField<Unit>(null) {
