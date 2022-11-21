@@ -27,6 +27,6 @@ dependencyResolutionManagement {
 
 include(":kotlin-ext")
 
-rootProject.name="kmp-kotlin-extensions"
+rootProject.name = "kmp-kotlin-extensions"
 rootProject.buildFileName = "build.gradle.kts"
 
