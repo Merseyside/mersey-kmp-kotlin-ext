@@ -25,14 +25,15 @@ abstract class ResultStateFlowUseCase<T, Params>(
         return super.update(params)
     }
 
-    override fun update(
+    override fun updateAsync(
         coroutineScope: CoroutineScope,
         params: Params?,
+        onComplete: (Result<T>) -> Unit,
         onError: (Throwable) -> Unit
     ) {
         coroutineScope.launch {
             try {
-                update(params)
+                onComplete(update(params))
             } catch(e: Throwable) {
                 updateValue(Result.Error(e))
                 onError(e)
