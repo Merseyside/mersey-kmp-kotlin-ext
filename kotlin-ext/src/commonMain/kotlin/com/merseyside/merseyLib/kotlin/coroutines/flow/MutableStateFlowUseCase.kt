@@ -33,14 +33,15 @@ abstract class MutableStateFlowUseCase<T, Params>(
         return updateValue(value)
     }
 
-    open fun update(
+    open fun updateAsync(
         coroutineScope: CoroutineScope = this.coroutineScope,
         params: Params? = null,
+        onComplete: (newValue: T) -> Unit = {},
         onError: (Throwable) -> Unit = {}
     ) {
         coroutineScope.launch {
             try {
-                update(params)
+                onComplete(update(params))
             } catch(e: Throwable) {
                 onError(e)
             }
@@ -51,10 +52,11 @@ abstract class MutableStateFlowUseCase<T, Params>(
         coroutineScope: CoroutineScope = this.coroutineScope,
         initialValue: T,
         params: Params? = null,
+        onComplete: (T) -> Unit = {},
         onError: (Throwable) -> Unit = {}
     ): StateFlow<T> {
         return init(initialValue).also {
-            update(coroutineScope, params, onError)
+            updateAsync(coroutineScope, params, onComplete, onError)
         }
     }
 
