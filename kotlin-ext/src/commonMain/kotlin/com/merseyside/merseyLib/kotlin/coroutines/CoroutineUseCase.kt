@@ -4,7 +4,9 @@ import com.merseyside.merseyLib.kotlin.logger.Logger
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
 import kotlinx.coroutines.*
 
-abstract class CoroutineUseCase<T, Params> : BaseCoroutineUseCase<T, Params>() {
+abstract class CoroutineUseCase<T, Params>(
+    executionStrategy: ExecutionStrategy = ExecutionStrategy.CANCEL_PREV_JOB
+) : BaseCoroutineUseCase<T, Params>(executionStrategy) {
 
     fun execute(
         coroutineScope: CoroutineScope = mainScope,

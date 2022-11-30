@@ -6,7 +6,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-abstract class CoroutineNoResultUseCase<Params> : BaseCoroutineUseCase<Unit, Params>() {
+abstract class CoroutineNoResultUseCase<Params>(
+    executionStrategy: ExecutionStrategy = ExecutionStrategy.CANCEL_PREV_JOB
+) : BaseCoroutineUseCase<Unit, Params>(executionStrategy) {
 
     fun execute(
         coroutineScope: CoroutineScope = mainScope,

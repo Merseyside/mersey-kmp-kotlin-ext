@@ -26,7 +26,7 @@ class BufferFlow<T>(
 
             override fun onStop(timeLeft: Long, error: Exception?) {
                 if (timeLeft.isZero()) {
-                    coroutineScope.launch { internalEmit(list) }
+                    coroutineScope.launch { internalEmit() }
                 }
             }
         })
@@ -39,7 +39,7 @@ class BufferFlow<T>(
         coroutineScope.onCancel {
             withContext(NonCancellable) {
                 if (list.isNotEmpty()) {
-                    internalEmit(list)
+                    internalEmit()
                 }
             }
         }
@@ -51,15 +51,15 @@ class BufferFlow<T>(
         if (list.size >= capacity) {
             timer?.stopTimer()
             coroutineScope.launch {
-                internalEmit(list)
+                internalEmit()
             }
         } else {
             timer?.restartTimer(timeoutMs)
         }
     }
 
-    private suspend fun internalEmit(list: MutableList<T>) {
-        sharedFlow.emit(list)
+    private suspend fun internalEmit() {
+        sharedFlow.emit(list.toList())
         list.clear()
     }
 
