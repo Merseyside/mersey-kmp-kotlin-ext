@@ -144,3 +144,7 @@ fun Collection<Boolean>.flatWithOr(): Boolean {
 fun Collection<Boolean>.flatWithAnd(): Boolean {
     return !contains(false)
 }
+
+inline fun <T, R> Iterable<T>.mapWith(transform: T.() -> R): List<R> {
+    return map(transform)
+}
