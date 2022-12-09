@@ -2,10 +2,14 @@ package com.merseyside.merseyLib.kotlin.coroutines.utils
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.joinAll
 
 class CompositeJob {
 
     private val jobList = mutableListOf<Job>()
+
+    val isActive: Boolean
+        get() = jobList.isNotEmpty()
 
     suspend fun <J : Job> add(block: suspend () -> J): J {
         val job = block()
@@ -14,17 +18,12 @@ class CompositeJob {
     }
 
     fun add(vararg jobs: Job) {
-        jobs.forEach { job ->
-            job.invokeOnCompletion {
-                jobList.remove(job)
-            }
-        }
-
         jobList.addAll(jobs)
     }
 
-    val isActive: Boolean
-        get() = jobList.isNotEmpty()
+    suspend fun joinAll() {
+        jobList.joinAll()
+    }
 
     /**
      * @return true if there is was at least one active job before it has been cancelled.

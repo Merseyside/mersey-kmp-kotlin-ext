@@ -12,7 +12,7 @@ fun <Result, Args> CoroutineQueue<Result, Args>.addAndExecuteAsync(block: suspen
 
 fun <Result, Args> CoroutineQueue<Result, Args>.addAndExecuteAsync(args: Args?, block: suspend () -> Result): Job? {
     add(args, resultProvider = block)
-    return executeIfIdleAsync()
+    return executeAsync()
 }
 
 fun <Result, Args> CoroutineQueue<Result, Args>.executeAsync(
@@ -28,7 +28,7 @@ fun <Result, Args> CoroutineQueue<Result, Args>.executeAsync(
         }
     }
 
-    if (workBuffer.isEmpty()) {
+    if (!hasQueueWork) {
         Logger.logErr(this, "No work added!")
         return null
     }
@@ -36,14 +36,4 @@ fun <Result, Args> CoroutineQueue<Result, Args>.executeAsync(
     return coroutineScope.launch {
         execute()
     }.also { job = it }
-}
-
-fun <Result, Args> CoroutineQueue<Result, Args>.executeIfIdleAsync(
-    coroutineScope: CoroutineScope = scope
-): Job? {
-    return if (!isActive) {
-        coroutineScope.launch {
-            executeIfIdle()
-        }
-    } else null
 }

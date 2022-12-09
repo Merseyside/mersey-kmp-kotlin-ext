@@ -12,8 +12,11 @@ class CoroutineQueue<Result, Args>(
 
     var fallOnException: Boolean = false
 
+    internal val hasQueueWork: Boolean
+        get() = workBuffer.isNotEmpty()
+
     private val asyncJob = SupervisorJob()
-    internal val workBuffer = ArrayDeque<Pair<suspend () -> Result, Args?>>()
+    private val workBuffer = ArrayDeque<Pair<suspend () -> Result, Args?>>()
     var job: Job? = null
         internal set
 
@@ -31,12 +34,6 @@ class CoroutineQueue<Result, Args>(
 
     fun add(args: Args?, resultProvider: suspend () -> Result) {
         workBuffer.addLast(resultProvider to args)
-    }
-
-    suspend fun executeIfIdle() {
-        if (!isActive) {
-            execute()
-        }
     }
 
     suspend fun execute(): Boolean {
@@ -60,7 +57,7 @@ class CoroutineQueue<Result, Args>(
     }
 
     private suspend fun runSequentialWork() = coroutineScope {
-        while (isActive && workBuffer.isNotEmpty()) {
+        while (isActive && hasQueueWork) {
             val workPair = workBuffer.removeFirst()
             val deferred = startNewJobAsync(workPair.first)
             completeJob(deferred.await(), workPair.second)
@@ -79,5 +76,5 @@ class CoroutineQueue<Result, Args>(
         async(asyncJob) { block() }
     }
 
-    override val tag: String = "CoroutineWorkManager"
+    override val tag: String = "CoroutineQueue"
 }
