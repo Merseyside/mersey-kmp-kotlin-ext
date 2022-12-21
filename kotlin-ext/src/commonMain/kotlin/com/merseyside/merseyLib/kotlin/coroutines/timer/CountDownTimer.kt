@@ -77,6 +77,8 @@ class CountDownTimer(
             Logger.logErr(TAG, "Already paused, check your code for multiple callers")
         }
         state = CurrentTimerState.PAUSED
+        timerJob?.cancel()
+        listener?.onPause(timerValue)
     }
 
     fun continueTimer() {
@@ -85,6 +87,7 @@ class CountDownTimer(
         }
         state = CurrentTimerState.RUNNING
         listener?.onContinue()
+        timerCanStart()
     }
 
     fun destroyTimer() {
@@ -99,7 +102,12 @@ class CountDownTimer(
             state = CurrentTimerState.RUNNING
 
             onTick(timerValue)
-            delay(delay)
+
+            if (timerValue < delay) {
+                delay(timerValue)
+            } else {
+                delay(delay)
+            }
 
             timerLoop@ while (isActive) {
                 timerValue -= delay
@@ -110,7 +118,8 @@ class CountDownTimer(
                     onTick(0L)
                     timerJob?.cancel()
                     listener?.onStop(0L)
-                } else {
+                }
+                else {
                     onTick(timerValue)
 
                     if (timerValue < delay) {
