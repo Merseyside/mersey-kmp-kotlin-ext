@@ -16,7 +16,7 @@ private fun <R> combine(
     }
 
     fields.forEach { field ->
-        field.observe(triggerObserver)
+        field.observe(ignoreCurrent = false, observer = triggerObserver)
     }
 
     return mutableObservableField

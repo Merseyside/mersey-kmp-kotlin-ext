@@ -7,7 +7,9 @@ import com.merseyside.merseyLib.kotlin.extensions.isNotZero
 import com.merseyside.merseyLib.kotlin.logger.ILogger
 import androidx.databinding.BaseObservable as AndroidObservable
 
-actual abstract class ObservableField<T> actual constructor(initialValue: T?) : AndroidObservable(),
+actual abstract class ObservableField<T> actual constructor(
+    initialValue: T?
+) : AndroidObservable(),
     ILogger {
     actual open var value: T? = initialValue
         @Bindable get
@@ -31,14 +33,16 @@ actual abstract class ObservableField<T> actual constructor(initialValue: T?) : 
 
     protected actual val observerList: MutableList<(T) -> Unit> = mutableListOf()
 
-    actual fun observe(block: (T) -> Unit): Disposable<T> {
+    actual fun observe(ignoreCurrent: Boolean, observer: (T) -> Unit): Disposable<T> {
 
-        observerList.add(block)
-        value?.let {
-            block(it)
+        observerList.add(observer)
+        if (!ignoreCurrent) {
+            value?.let {
+                observer(it)
+            }
         }
 
-        return Disposable(this, block)
+        return Disposable(this, observer)
     }
 
     actual fun removeObserver(block: (T) -> Unit): Boolean {

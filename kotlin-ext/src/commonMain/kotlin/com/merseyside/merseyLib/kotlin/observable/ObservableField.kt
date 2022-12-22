@@ -7,7 +7,7 @@ expect abstract class ObservableField<T> constructor(initialValue: T?): ILogger 
 
     protected val observerList: MutableList<(T) -> Unit>
 
-    fun observe(block: (T) -> Unit): Disposable<T>
+    fun observe(ignoreCurrent: Boolean = false, observer: (T) -> Unit): Disposable<T>
 
     fun removeObserver(block: (T) -> Unit): Boolean
 
