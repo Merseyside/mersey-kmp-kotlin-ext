@@ -5,8 +5,8 @@ plugins {
         plugin(kotlin.multiplatform)
         plugin(moko.multiplatform)
         plugin(kotlin.serialization)
-        id(mersey.android.convention.id())
-        id(mersey.kotlin.convention.id())
+        id(mersey.android.extension.id())
+        id(mersey.kotlin.extension.id())
         plugin(kotlin.kapt)
     }
     `maven-publish-config`
@@ -20,6 +20,8 @@ android {
         minSdk = Application.minSdk
         targetSdk = Application.targetSdk
     }
+
+    buildFeatures.dataBinding = true
 }
 
 kotlin {
@@ -39,7 +41,7 @@ kotlin {
     }
 }
 
-kotlinConvention {
+kotlinExtension {
     compilerArgs = listOf("-opt-in=kotlin.RequiresOptIn")
 }
 
@@ -52,4 +54,6 @@ val libs = listOf(
 dependencies {
     libs.forEach { lib -> commonMainImplementation(lib) }
     commonMainImplementation(multiplatformLibs.coroutines)
+
+
 }

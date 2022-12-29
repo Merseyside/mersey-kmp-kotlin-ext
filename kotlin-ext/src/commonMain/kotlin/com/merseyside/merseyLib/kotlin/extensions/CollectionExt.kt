@@ -75,14 +75,6 @@ fun <T, R : Comparable<R>> Collection<T>.minByNullable(selector: (T) -> R?): T? 
     return minElement
 }
 
-inline fun <T> Iterable<T?>.forEachNotNull(action: (T) -> Unit) {
-    return this.filterNotNull().forEach(action)
-}
-
-fun Iterable<Boolean>.forEachIsTrue(): Boolean {
-    return this.find { !it } != null
-}
-
 fun <T> Collection<Collection<T>>.union(): Set<T> {
     val hasEmptyList = find { it.isEmpty() } != null
 
@@ -113,10 +105,6 @@ fun <T> Collection<Collection<T>>.intersect(): Set<T> {
     return resultList
 }
 
-inline fun <K, V> Map<out K, V>.forEachEntry(action: (key: K, value: V) -> Unit) {
-    forEach { entry -> action(entry.key, entry.value) }
-}
-
 inline fun <T, R> Collection<T?>.whenAllNotNull(block: (List<T>) -> R) {
     if (this.all { it != null }) {
         block(this.filterNotNull())
@@ -127,22 +115,6 @@ inline fun <T, R> Collection<T?>.whenAnyNotNull(block: (List<T>) -> R) {
     if (this.any { it != null }) {
         block(this.filterNotNull())
     }
-}
-
-inline fun <T, R> Iterable<T>.flatMapNotNull(transform: (T) -> Iterable<R>?): List<R> {
-    return flatMap { transform(it) ?: emptyList()  }
-}
-
-inline fun <T> Iterable<T>.separate(predicate: (T) -> Boolean): Pair<List<T>, List<T>> {
-    val trueList = mutableListOf<T>()
-    val falseList = mutableListOf<T>()
-
-    forEach {
-        if (predicate(it)) trueList.add(it)
-        else falseList.add(it)
-    }
-
-    return trueList to falseList
 }
 
 fun <T> Collection<T>.merge(vararg lists: Collection<T>): List<T> {
@@ -156,33 +128,6 @@ fun <T> Collection<T>.merge(vararg lists: Collection<T>): List<T> {
     return list
 }
 
-/**
- * Moves item from old position to new position
- * @return moved item
- */
-fun <T> MutableList<T>.move(oldPosition: Int, newPosition: Int): T {
-    val item = get(oldPosition)
-    removeAt(oldPosition)
-    add(newPosition, item)
-    return item
-}
-
-fun <T> MutableList<T>.move(item: T, newPosition: Int): T {
-    val oldPosition = indexOf(item)
-    removeAt(oldPosition)
-    add(newPosition, item)
-    return item
-}
-
-fun <T1, T2> Iterable<T1>.subtractBy(
-    other: Iterable<T2>,
-    predicate: (first: T1, second: T2) -> Boolean
-): Set<T1> {
-    return filter { first ->
-        other.find { second -> predicate(first, second) } == null
-    }.toSet()
-}
-
 @Throws(NullPointerException::class)
 fun <T> Collection<T>.firstNotNull(): T {
     return find { it != null } ?: throw NullPointerException("No non-null items found!")
@@ -192,18 +137,14 @@ fun <T> Collection<T>.isEqualsIgnoreOrder(other: Collection<T>): Boolean {
     return this.size == other.size && this.toSet() == other.toSet()
 }
 
-inline fun <reified R> Iterable<R>.findIsInstance(): R {
-    return filterIsInstance<R>().first()
-}
-
-inline fun <reified R> Iterable<R>.findLastIsInstance(): R {
-    return filterIsInstance<R>().last()
-}
-
 fun Collection<Boolean>.flatWithOr(): Boolean {
     return contains(true)
 }
 
 fun Collection<Boolean>.flatWithAnd(): Boolean {
     return !contains(false)
+}
+
+inline fun <T, R> Iterable<T>.mapWith(transform: T.() -> R): List<R> {
+    return map(transform)
 }

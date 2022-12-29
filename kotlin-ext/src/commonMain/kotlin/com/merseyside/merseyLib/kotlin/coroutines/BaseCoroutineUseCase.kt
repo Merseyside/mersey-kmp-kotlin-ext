@@ -1,49 +1,38 @@
 package com.merseyside.merseyLib.kotlin.coroutines
 
+import com.merseyside.merseyLib.kotlin.coroutines.utils.CompositeJob
 import com.merseyside.merseyLib.kotlin.coroutines.utils.defaultDispatcher
 import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import kotlinx.coroutines.*
 
-abstract class BaseCoroutineUseCase<T, Params> {
-
+abstract class BaseCoroutineUseCase<T, Params>(var executionStrategy: ExecutionStrategy) {
     protected val mainScope: CoroutineScope by lazy { CoroutineScope(uiDispatcher) }
-
     private val asyncJob = SupervisorJob()
-    
-    var job: Job? = null
-        set(value) {
-            field?.let {
-                if (it.isActive) {
-                    it.cancel()
-                }
-            }
-            field = value
-        }
+
+    private val compositeJob = CompositeJob()
 
     val isActive: Boolean
-        get() {
-            return job?.isActive ?: false
-        }
+        get() = compositeJob.isActive
 
     protected abstract suspend fun doWork(params: Params?): T
 
-    protected suspend fun doWorkDeferred(params: Params?): Deferred<T> = coroutineScope {
-        async(asyncJob + defaultDispatcher) {
-            doWork(params)
-        }.also { job = it }
-    }
+    internal suspend fun executeAsync(params: Params?): T = coroutineScope {
+        if (executionStrategy == ExecutionStrategy.CANCEL_PREV_JOB) compositeJob.cancel()
 
-    protected suspend fun executeAsync(params: Params?): T {
-        return doWorkDeferred(params).await()
-    }
+        compositeJob.add {
+            async(asyncJob + defaultDispatcher) {
+                doWork(params)
+            }
+        }
+    }.await()
 
     fun cancel(cause: CancellationException? = null): Boolean {
-        return job?.let {
-            it.cancel(cause)
-            job = null
-            true
-        } ?: false
+        return compositeJob.cancel(cause)
     }
 
     suspend operator fun invoke(params: Params? = null) = executeAsync(params)
+}
+
+enum class ExecutionStrategy {
+    CANCEL_PREV_JOB, INDEPENDENT_EXECUTION
 }

@@ -4,6 +4,16 @@ import com.merseyside.merseyLib.kotlin.logger.Logger
 import com.merseyside.merseyLib.kotlin.coroutines.BaseCoroutineUseCase
 import kotlinx.coroutines.*
 
+fun CoroutineScope.onCancel(block: suspend () -> Unit) {
+    launch {
+        try {
+            awaitCancellation()
+        } finally {
+            block()
+        }
+    }
+}
+
 fun <R1, P1, R2, P2> CoroutineScope.zipUseCases(
     c1: BaseCoroutineUseCase<R1, P1>,
     c2: BaseCoroutineUseCase<R2, P2>,

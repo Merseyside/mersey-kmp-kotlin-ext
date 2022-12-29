@@ -54,3 +54,6 @@ fun JsonObjectBuilder.putSafe(key: String, value: String?): JsonElement? {
 fun JsonObjectBuilder.putSafe(key: String, value: JsonElement?): JsonElement? {
     return value?.let { put(key, value) }
 }
+fun JsonObjectBuilder.putSafe(key: String, value: Boolean?): JsonElement? {
+    return value?.let { put(key, value) }
+}

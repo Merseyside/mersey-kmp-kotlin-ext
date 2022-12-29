@@ -14,8 +14,9 @@ inline fun <T1: Any, T2: Any, T3: Any, R: Any> safeLet(p1: T1?, p2: T2?, p3: T3?
     return if (p1 != null && p2 != null && p3 != null) block(p1, p2, p3) else null
 }
 
+@Throws(NullPointerException::class)
 fun <T> firstNotNull(vararg data: T): T {
-    return data.toList().firstNotNull()
+    return data.toList().firstNotNull() ?: throw NullPointerException("No non-null items found!")
 }
 
 fun <R> Boolean.ifTrue(block: () -> R): R? {
