@@ -1,13 +1,14 @@
 package com.merseyside.merseyLib.kotlin.coroutines.queue
 
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
+import com.merseyside.merseyLib.kotlin.coroutines.utils.defaultDispatcher
 import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import com.merseyside.merseyLib.kotlin.logger.ILogger
 import com.merseyside.merseyLib.kotlin.logger.Logger
 import kotlinx.coroutines.*
 
 class CoroutineQueue<Result, Args>(
-    var scope: CoroutineScope = CoroutineScope(uiDispatcher)
+    var scope: CoroutineScope = CoroutineScope(defaultDispatcher)
 ) : ILogger {
 
     var fallOnException: Boolean = false

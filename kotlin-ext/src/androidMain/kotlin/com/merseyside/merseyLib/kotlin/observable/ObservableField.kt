@@ -11,8 +11,8 @@ actual abstract class ObservableField<T> actual constructor(
     initialValue: T?
 ) : AndroidObservable(),
     ILogger {
+    @Bindable
     actual open var value: T? = initialValue
-        @Bindable get
         internal set(value) {
             if (field != value) {
                 field = value
@@ -73,20 +73,22 @@ actual abstract class ObservableField<T> actual constructor(
 actual open class MutableObservableField<T> actual constructor(initialValue: T?) :
     ObservableField<T>(initialValue) {
 
+    @get:Bindable
     override var value: T?
-        @Bindable get() = super.value
-        @Bindable public set(v) {
+        get() = super.value
+        public set(v) {
             super.value = v
         }
 }
 
 actual open class SingleObservableField<T> actual constructor(initialValue: T?) :
     MutableObservableField<T>(initialValue) {
+    @get:Bindable
     actual override var value: T?
-        @Bindable set(v) {
+        get() = super.value.also { value = null }
+        set(v) {
             super.value = v
         }
-        @Bindable get() = super.value.also { value = null }
 }
 
 actual class SingleObservableEvent : SingleObservableField<Unit>(null) {

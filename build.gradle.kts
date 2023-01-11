@@ -10,7 +10,7 @@ plugins {
 
 allprojects {
     group = "io.github.merseyside"
-    version = "1.2.6"
+    version = "1.2.7"
 }
 
 tasks.register("clean", Delete::class).configure {
