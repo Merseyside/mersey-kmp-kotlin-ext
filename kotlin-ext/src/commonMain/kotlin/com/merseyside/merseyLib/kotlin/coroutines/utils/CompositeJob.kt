@@ -9,7 +9,7 @@ class CompositeJob {
     private val jobList = mutableListOf<Job>()
 
     val isActive: Boolean
-        get() = jobList.isNotEmpty()
+        get() = jobList.any { it.isActive }
 
     suspend fun <J : Job> add(block: suspend () -> J): J {
         val job = block()
