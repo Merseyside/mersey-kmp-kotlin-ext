@@ -13,7 +13,7 @@ class CoroutineQueue<Result, Args>(
 
     var fallOnException: Boolean = false
 
-    internal val hasQueueWork: Boolean
+    val hasQueueWork: Boolean
         get() = workBuffer.isNotEmpty()
 
     private val asyncJob = SupervisorJob()

@@ -2,7 +2,6 @@ package com.merseyside.merseyLib.kotlin.coroutines.queue.ext
 
 import com.merseyside.merseyLib.kotlin.coroutines.queue.CoroutineQueue
 import com.merseyside.merseyLib.kotlin.logger.Logger
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
