@@ -5,9 +5,7 @@ package com.merseyside.merseyLib.kotlin.coroutines.timer
  */
 
 import com.merseyside.merseyLib.kotlin.logger.Logger
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.*
-import kotlinx.coroutines.withContext
 
 class CountDownTimer(
     private val delay: Long = 1000L,
@@ -75,19 +73,22 @@ class CountDownTimer(
     fun pauseTimer() {
         if (state == CurrentTimerState.PAUSED) {
             Logger.logErr(TAG, "Already paused, check your code for multiple callers")
+        } else {
+            state = CurrentTimerState.PAUSED
+            timerJob?.cancel()
+            listener?.onPause(timerValue)
         }
-        state = CurrentTimerState.PAUSED
-        timerJob?.cancel()
-        listener?.onPause(timerValue)
+
     }
 
     fun continueTimer() {
         if (state == CurrentTimerState.RUNNING) {
             Logger.logErr(TAG, "Already running, check your code for multiple callers")
+        } else {
+            state = CurrentTimerState.RUNNING
+            listener?.onContinue()
+            timerCanStart()
         }
-        state = CurrentTimerState.RUNNING
-        listener?.onContinue()
-        timerCanStart()
     }
 
     fun destroyTimer() {
@@ -118,8 +119,7 @@ class CountDownTimer(
                     onTick(0L)
                     timerJob?.cancel()
                     listener?.onStop(0L)
-                }
-                else {
+                } else {
                     onTick(timerValue)
 
                     if (timerValue < delay) {
