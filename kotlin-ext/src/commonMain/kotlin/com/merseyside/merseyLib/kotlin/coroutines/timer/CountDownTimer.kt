@@ -63,7 +63,7 @@ class CountDownTimer(
             throw IllegalStateException("Timer destroyed!")
         }
 
-        if (state == CurrentTimerState.RUNNING) {
+        if (state == CurrentTimerState.RUNNING || state == CurrentTimerState.PAUSED) {
             stopTimer()
         }
 
@@ -82,12 +82,12 @@ class CountDownTimer(
     }
 
     fun continueTimer() {
-        if (state == CurrentTimerState.RUNNING) {
-            Logger.logErr(TAG, "Already running, check your code for multiple callers")
-        } else {
+        if (state == CurrentTimerState.PAUSED) {
             state = CurrentTimerState.RUNNING
             listener?.onContinue()
             timerCanStart()
+        } else {
+            Logger.logErr(TAG, "Timer not paused")
         }
     }
 
