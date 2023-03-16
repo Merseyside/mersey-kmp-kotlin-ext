@@ -10,11 +10,16 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class BufferFlow<T>(
+/**
+ * Use this flow when you want to achieve collecting data in a buffer with preassigned
+ * @param[capacity] and release it when timer is over.
+ * Timer restarts when new data emits
+ */
+
+class BufferTimerFlow<T>(
     private val coroutineScope: CoroutineScope,
     private val capacity: Int = 1,
     private val timeoutMs: Long = 0L

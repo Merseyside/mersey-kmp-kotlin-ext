@@ -19,9 +19,7 @@ class CountDownTimer(
 
     var state: CurrentTimerState = CurrentTimerState.STOPPED
         private set(value) {
-            if (field == CurrentTimerState.DESTROYED) {
-                return
-            }
+            if (field == CurrentTimerState.DESTROYED) return
             field = value
         }
 
