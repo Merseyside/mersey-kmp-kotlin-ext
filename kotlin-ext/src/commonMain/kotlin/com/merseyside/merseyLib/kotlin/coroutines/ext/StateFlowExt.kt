@@ -27,18 +27,17 @@ fun <T, R> StateFlow<T>.mapState(
 
 fun <T> StateFlow<T>.filterState(
     scope: CoroutineScope,
-    initialValue: T,
     started: SharingStarted = SharingStarted.Eagerly,
     predicate: suspend (data: T) -> Boolean
 ): StateFlow<T> {
     return filter { predicate(it) }
-        .stateIn(scope, started, initialValue)
+        .stateIn(scope, started, value)
 }
 
 fun <T> StateFlow<T?>.filterNotNullState(
     scope: CoroutineScope,
-    initialValue: T,
     started: SharingStarted = SharingStarted.Eagerly,
+    ifNullBlock: () -> T
 ): StateFlow<T> {
-    return filterNotNull().stateIn(scope, started, initialValue)
+    return filterNotNull().stateIn(scope, started, value ?: ifNullBlock())
 }
