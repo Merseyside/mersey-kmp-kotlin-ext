@@ -1,5 +1,3 @@
-enableFeaturePreview("VERSION_CATALOGS")
-
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
@@ -8,7 +6,7 @@ dependencyResolutionManagement {
         google()
     }
 
-    val catalogVersions = "1.6.9"
+    val catalogVersions = "1.7.1"
     val group = "io.github.merseyside"
     versionCatalogs {
         val common by creating {

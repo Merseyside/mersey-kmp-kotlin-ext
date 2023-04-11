@@ -20,7 +20,9 @@ android {
         minSdk = Application.minSdk
     }
 
-    buildFeatures.dataBinding = true
+    buildFeatures {
+        dataBinding = true
+    }
 }
 
 kotlin {
