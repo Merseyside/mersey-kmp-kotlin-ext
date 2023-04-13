@@ -1,16 +1,8 @@
-pluginManagement {
-    repositories {
-        mavenCentral()
-        google()
-
-        gradlePluginPortal()
-    }
-}
-
 dependencyResolutionManagement {
     repositories {
         mavenLocal()
         mavenCentral()
+        google()
         gradlePluginPortal()
     }
 

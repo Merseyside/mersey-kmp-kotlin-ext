@@ -9,6 +9,7 @@ plugins {
         id(mersey.kotlin.extension.id())
         plugin(kotlin.kapt)
     }
+    `javadoc-stub-convention`
     `maven-publish-config`
 }
 
