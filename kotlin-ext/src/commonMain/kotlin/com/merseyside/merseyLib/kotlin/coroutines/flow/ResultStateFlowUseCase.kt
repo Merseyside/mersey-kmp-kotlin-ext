@@ -1,7 +1,8 @@
 package com.merseyside.merseyLib.kotlin.coroutines.flow
 
 import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
-import com.merseyside.merseyLib.kotlin.entity.Result
+import com.merseyside.merseyLib.kotlin.entity.result.Result
+import com.merseyside.merseyLib.kotlin.entity.result.isInitialized
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

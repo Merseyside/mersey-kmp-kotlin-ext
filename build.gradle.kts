@@ -9,8 +9,10 @@ plugins {
 }
 
 allprojects {
-    group = "io.github.merseyside"
-    version = "1.2.7"
+    plugins.withId("org.gradle.maven-publish") {
+        group = "io.github.merseyside"
+        version = common.versions.mersey.kotlin.ext.get()
+    }
 }
 
 tasks.register("clean", Delete::class).configure {

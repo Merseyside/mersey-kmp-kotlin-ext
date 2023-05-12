@@ -1,4 +1,7 @@
-package com.merseyside.merseyLib.kotlin.observable
+package com.merseyside.merseyLib.kotlin.observable.ext
+
+import com.merseyside.merseyLib.kotlin.observable.MutableObservableField
+import com.merseyside.merseyLib.kotlin.observable.ObservableField
 
 private fun <R> combine(
     vararg fields: ObservableField<*>,

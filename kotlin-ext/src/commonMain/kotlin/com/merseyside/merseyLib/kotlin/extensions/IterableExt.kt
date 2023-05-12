@@ -28,6 +28,7 @@ fun <T1, T2> Iterable<T1>.subtractBy(
     other: Iterable<T2>,
     predicate: (first: T1, second: T2) -> Boolean
 ): Set<T1> {
+    if (other.count().isZero()) return toSet()
     return filter { first ->
         other.find { second -> predicate(first, second) } == null
     }.toSet()
