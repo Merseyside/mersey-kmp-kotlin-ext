@@ -9,16 +9,13 @@ import androidx.databinding.BaseObservable as AndroidObservable
 
 actual abstract class ObservableField<T> actual constructor(
     initialValue: T?
-) : AndroidObservable(),
-    ILogger {
+) : AndroidObservable(), ILogger {
     @Bindable
     actual open var value: T? = initialValue
         internal set(value) {
-            if (field != value) {
-                field = value
-                notifyPropertyChanged(BR.value)
-                notifyObservers()
-            }
+            field = value
+            notifyPropertyChanged(BR.value)
+            notifyObservers()
         }
 
     constructor(vararg dependencies: Observable) : this(null) {
@@ -34,12 +31,20 @@ actual abstract class ObservableField<T> actual constructor(
     protected actual val observerList: MutableList<(T) -> Unit> = mutableListOf()
 
     actual fun observe(ignoreCurrent: Boolean, observer: (T) -> Unit): Disposable<T> {
-
         observerList.add(observer)
         if (!ignoreCurrent) {
             value?.let {
                 observer(it)
             }
+        }
+
+        return Disposable(this, observer)
+    }
+
+    actual fun observeNullable(ignoreCurrent: Boolean, observer: (T?) -> Unit): Disposable<T> {
+        observerList.add(observer)
+        if (!ignoreCurrent) {
+            observer(value)
         }
 
         return Disposable(this, observer)
@@ -68,6 +73,8 @@ actual abstract class ObservableField<T> actual constructor(
             notifyChange()
         }
     }
+
+
 }
 
 actual open class MutableObservableField<T> actual constructor(initialValue: T?) :
@@ -85,7 +92,8 @@ actual open class SingleObservableField<T> actual constructor(initialValue: T?) 
     MutableObservableField<T>(initialValue) {
     @get:Bindable
     actual override var value: T?
-        get() = super.value.also { value = null }
+        get() = super.value.also {
+            if (it != null) value = null }
         set(v) {
             super.value = v
         }

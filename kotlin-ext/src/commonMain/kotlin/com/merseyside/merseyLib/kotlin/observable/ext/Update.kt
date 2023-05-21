@@ -1,27 +1,27 @@
 package com.merseyside.merseyLib.kotlin.observable.ext
 
 import com.merseyside.merseyLib.kotlin.observable.MutableObservableField
-import com.merseyside.merseyLib.kotlin.utils.safeLet
-
 
 /**
  * Updates observable field with providing current value.
  * @return true if current and new values are not equals, false otherwise.
  */
-fun <T> MutableObservableField<T>.update(update: (current: T?) -> T?): Boolean {
+fun <T> MutableObservableField<T>.compareAndUpdateNullable(update: (current: T?) -> T?): Boolean {
     val newValue = update(value)
-    return if (newValue != value) {
-        value = newValue
-        true
-    } else false
+    return compareAndSetNullable(newValue)
 }
 
-fun <T> MutableObservableField<T>.updateNotNull(update: (current: T) -> T): Boolean {
-    return safeLet(value) { v ->
-        val newValue = update(v)
-        if (newValue != value) {
-            value = newValue
-            true
-        } else false
-    } ?: throw NullPointerException("Value is null! Update can not be completed!")
+@Throws(NullPointerException::class)
+fun <T> MutableObservableField<T>.compareAndUpdate(update: (current: T) -> T): Boolean {
+    val newValue = update(valueNotNull())
+    return compareAndSet(newValue)
+}
+
+fun <T> MutableObservableField<T>.updateNullable(update: (current: T?) -> T?) {
+    value = update(value)
+}
+
+@Throws(NullPointerException::class)
+fun <T> MutableObservableField<T>.update(update: (current: T) -> T) {
+    value = update(valueNotNull())
 }
