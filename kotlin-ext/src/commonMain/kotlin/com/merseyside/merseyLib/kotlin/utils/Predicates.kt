@@ -19,12 +19,22 @@ fun <T> firstNotNull(vararg data: T): T {
     return data.toList().firstNotNull() ?: throw NullPointerException("No non-null items found!")
 }
 
-fun <R> Boolean.ifTrue(block: () -> R): R? {
+fun Boolean.ifTrue(block: () -> Unit): Boolean {
+    if (this) block()
+    return this
+}
+
+fun <R> Boolean.mapIfTrue(block: () -> R): R? {
     return if (this) block()
     else null
 }
 
-fun <R> Boolean.ifFalse(block: () -> R): R? {
+fun Boolean.ifFalse(block: () -> Unit): Boolean {
+    if (!this) block()
+    return this
+}
+
+fun <R> Boolean.mapIfFalse(block: () -> R): R? {
     return if (!this) block()
     else null
 }

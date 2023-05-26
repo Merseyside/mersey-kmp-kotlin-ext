@@ -54,3 +54,14 @@ inline fun <T> Result<T>.isError(): Boolean {
 
     return this is Result.Error<T>
 }
+
+fun <T> Result<T>.isEmpty(): Boolean {
+    return when (value) {
+        null -> true
+        is Collection<*> -> {
+            (value as Collection<*>).isEmpty()
+        }
+
+        else -> false
+    }
+}
