@@ -43,7 +43,7 @@ fun Collection<Boolean?>.toJsonArray(): JsonArray {
 }
 
 @JvmName("toLongJsonArray")
-fun Collection<Long>.toJsonArray(): JsonArray {
+fun Collection<Long?>.toJsonArray(): JsonArray {
     return buildJsonArray {
         forEach {
             add(it)
@@ -52,7 +52,7 @@ fun Collection<Long>.toJsonArray(): JsonArray {
 }
 
 @JvmName("toDoubleJsonArray")
-fun Collection<Double>.toJsonArray(): JsonArray {
+fun Collection<Double?>.toJsonArray(): JsonArray {
     return buildJsonArray {
         forEach {
             add(it)

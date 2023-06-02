@@ -21,6 +21,10 @@ fun ListBooleanConverter.toJsonArray(): JsonArray {
     return asList().toJsonArray()
 }
 
+fun ListDoubleConverter.toJsonArray(): JsonArray {
+    return asList().toJsonArray()
+}
+
 inline fun <reified T : Any> JsonObjectBuilder.putSerializable(
     key: String,
     obj: T,
