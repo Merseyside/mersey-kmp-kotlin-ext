@@ -51,6 +51,15 @@ fun Collection<Long>.toJsonArray(): JsonArray {
     }
 }
 
+@JvmName("toDoubleJsonArray")
+fun Collection<Double>.toJsonArray(): JsonArray {
+    return buildJsonArray {
+        forEach {
+            add(it)
+        }
+    }
+}
+
 @JvmName("toAnyJsonArray")
 inline fun <reified T : Any> Collection<T?>.toJsonArray(json: Json = JsonConfigurator.json): JsonArray {
     return buildJsonArray {

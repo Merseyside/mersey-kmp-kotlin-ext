@@ -15,3 +15,7 @@ interface ListFloatConverter {
 interface ListBooleanConverter {
     fun asList(): List<Boolean>
 }
+
+interface ListDoubleConverter {
+    fun asList(): List<Double?>
+}
