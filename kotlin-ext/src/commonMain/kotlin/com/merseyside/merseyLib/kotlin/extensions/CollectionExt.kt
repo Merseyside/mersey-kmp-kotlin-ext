@@ -148,3 +148,15 @@ fun Collection<Boolean>.flatWithAnd(): Boolean {
 inline fun <T, R> Iterable<T>.mapWith(transform: T.() -> R): List<R> {
     return map(transform)
 }
+
+/**
+ * Finds position of first item which matches given predicate.
+ * If item hasn't found returns -1.
+ */
+fun <T> Collection<T>.findPosition(predicate: (T) -> Boolean): Int {
+    forEachIndexed { index, value ->
+        if (predicate(value)) return index
+    }
+
+    return -1
+}
