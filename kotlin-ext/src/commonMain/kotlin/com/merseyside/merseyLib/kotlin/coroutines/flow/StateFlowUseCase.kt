@@ -2,6 +2,7 @@ package com.merseyside.merseyLib.kotlin.coroutines.flow
 
 import com.merseyside.merseyLib.kotlin.coroutines.utils.defaultDispatcher
 import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
+import com.merseyside.merseyLib.kotlin.logger.Logger
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.StateFlow
@@ -10,7 +11,8 @@ abstract class StateFlowUseCase<T, Params>(
     val coroutineScope: CoroutineScope = CoroutineScope(uiDispatcher)
 ) {
 
-    val stateFlow: StateFlow<T> by lazy { provideStateFlow() }
+    lateinit var stateFlow: StateFlow<T>
+        private set
     private val asyncJob = SupervisorJob()
 
     open val value: T
@@ -29,17 +31,21 @@ abstract class StateFlowUseCase<T, Params>(
     val isActive: Boolean
         get() = job?.isActive ?: false
 
-//    fun init(initialValue: T): StateFlow<T> {
-//        if (isInitialized()) {
-//            Logger.logErr("Already initialized!")
-//        } else {
-//            stateFlow = provideStateFlow(initialValue)
-//        }
-//
-//        return stateFlow
-//    }
+    protected open fun isInitialized(): Boolean {
+        return this::stateFlow.isInitialized
+    }
 
-    protected abstract fun provideStateFlow(): StateFlow<T>
+    fun init(initialValue: T): StateFlow<T> {
+        if (isInitialized()) {
+            Logger.logErr("Already initialized!")
+        } else {
+            stateFlow = provideStateFlow(initialValue)
+        }
+
+        return stateFlow
+    }
+
+    protected abstract fun provideStateFlow(initialValue: T): StateFlow<T>
 
     private suspend fun doWorkDeferredAsync(
         params: Params? = null,
