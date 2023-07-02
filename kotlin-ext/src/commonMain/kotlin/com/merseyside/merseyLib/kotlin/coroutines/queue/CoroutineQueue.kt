@@ -1,18 +1,20 @@
 package com.merseyside.merseyLib.kotlin.coroutines.queue
 
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
+import com.merseyside.merseyLib.kotlin.coroutines.utils.defaultDispatcher
 import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import com.merseyside.merseyLib.kotlin.logger.ILogger
 import com.merseyside.merseyLib.kotlin.logger.Logger
+import com.merseyside.merseyLib.kotlin.utils.safeLet
 import kotlinx.coroutines.*
 
 class CoroutineQueue<Result, Args>(
-    var scope: CoroutineScope = CoroutineScope(uiDispatcher)
+    var scope: CoroutineScope = CoroutineScope(defaultDispatcher)
 ) : ILogger {
 
     var fallOnException: Boolean = false
 
-    internal val hasQueueWork: Boolean
+    val hasQueueWork: Boolean
         get() = workBuffer.isNotEmpty()
 
     private val asyncJob = SupervisorJob()
@@ -74,6 +76,18 @@ class CoroutineQueue<Result, Args>(
 
     private suspend fun doWorkAsync(block: suspend () -> Result) = coroutineScope {
         async(asyncJob) { block() }
+    }
+
+    fun cancelAndClear(
+        exception: CancellationException = CancellationException("Cancelled and cleared all queued jobs!")
+    ): Boolean {
+        val jobCancelled = safeLet(job) {
+            it.cancel(exception)
+            true
+        } ?: false
+
+        workBuffer.clear()
+        return jobCancelled
     }
 
     override val tag: String = "CoroutineQueue"

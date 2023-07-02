@@ -3,15 +3,16 @@ package com.merseyside.merseyLib.kotlin.coroutines.flow
 import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 
 abstract class MutableStateFlowUseCase<T, Params>(
-    coroutineScope: CoroutineScope = CoroutineScope(uiDispatcher)
+    coroutineScope: CoroutineScope = CoroutineScope(uiDispatcher),
+    startWhenCreated: Boolean = false
 ) : StateFlowUseCase<T, Params>(coroutineScope) {
 
-    private lateinit var mutStateFlow: MutableStateFlow<T>
+    private val mutStateFlow: MutableStateFlow<T>
+        get() = stateFlow as MutableStateFlow<T>
 
     override var value: T
         get() = stateFlow.value
@@ -19,11 +20,17 @@ abstract class MutableStateFlowUseCase<T, Params>(
             mutStateFlow.value = value
         }
 
+    init {
+        if (startWhenCreated) {
+            coroutineScope.launch {
+                provideStateFlow()
+            }
+        }
+    }
+
     protected abstract suspend fun updateWithParams(params: Params?): T
 
-    final override fun provideStateFlow(initialValue: T): MutableStateFlow<T> {
-        return MutableStateFlow(initialValue).also { mutStateFlow = it }
-    }
+    abstract override fun provideStateFlow(): MutableStateFlow<T>
 
     open suspend fun update(params: Params? = null): T {
         val value = execute(params) {
@@ -48,23 +55,7 @@ abstract class MutableStateFlowUseCase<T, Params>(
         }
     }
 
-    open fun initAndUpdate(
-        coroutineScope: CoroutineScope = this.coroutineScope,
-        initialValue: T,
-        params: Params? = null,
-        onComplete: (T) -> Unit = {},
-        onError: (Throwable) -> Unit = {}
-    ): StateFlow<T> {
-        return init(initialValue).also {
-            updateAsync(coroutineScope, params, onComplete, onError)
-        }
-    }
-
-    open fun updateValue(value: T): T {
+    internal fun updateValue(value: T): T {
         return mutStateFlow.updateAndGet { value }
-    }
-
-    operator fun invoke(initialValue: T): StateFlow<T> {
-        return init(initialValue)
     }
 }

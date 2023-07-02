@@ -5,13 +5,15 @@ import com.merseyside.merseyLib.kotlin.logger.ILogger
 actual abstract class ObservableField<T> actual constructor(initialValue: T?) : ILogger {
     actual open var value: T? = initialValue
         internal set(value) {
-            if (field != value) {
-                field = value
-                notifyObservers()
-            }
+            field = value
+            notifyObservers()
         }
 
     protected actual val observerList: MutableList<(T) -> Unit> = mutableListOf()
+
+    actual fun observe(observer: (T) -> Unit): Disposable<T> {
+        return observe(ignoreCurrent = false, observer)
+    }
 
     actual fun observe(ignoreCurrent: Boolean, observer: (T) -> Unit): Disposable<T> {
 
@@ -42,6 +44,14 @@ actual abstract class ObservableField<T> actual constructor(initialValue: T?) : 
     }
 
     override val tag: String = "ObservableField"
+    actual fun observeNullable(ignoreCurrent: Boolean, observer: (T?) -> Unit): Disposable<T> {
+        observerList.add(observer)
+        if (!ignoreCurrent) {
+            observer(value)
+        }
+
+        return Disposable(this, observer)
+    }
 }
 
 actual open class MutableObservableField<T> actual constructor(initialValue: T?) :

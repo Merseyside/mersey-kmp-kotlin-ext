@@ -1,22 +1,16 @@
 package com.merseyside.merseyLib.kotlin.coroutines.flow
 
 import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
-import com.merseyside.merseyLib.kotlin.entity.Result
+import com.merseyside.merseyLib.kotlin.entity.result.Result
+import com.merseyside.merseyLib.kotlin.entity.result.isInitialized
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 abstract class ResultStateFlowUseCase<T, Params>(
     coroutineScope: CoroutineScope = CoroutineScope(uiDispatcher),
     initialValue: Result<T> = Result.NotInitialized()
 ): MutableStateFlowUseCase<Result<T>, Params>(coroutineScope) {
-
-    init {
-        init(initialValue)
-    }
-
-    override fun isInitialized(): Boolean {
-        return super.isInitialized() && value.isInitialized()
-    }
 
     override suspend fun update(params: Params?): Result<T> {
         val loadingValue = getLoadingValue(params)
@@ -41,14 +35,11 @@ abstract class ResultStateFlowUseCase<T, Params>(
         }
     }
 
-    override fun updateValue(value: Result<T>): Result<T> {
-        return if (value.isInitialized()) {
-            super.updateValue(value)
-        } else throw IllegalArgumentException("")
+    override fun provideStateFlow(): MutableStateFlow<Result<T>> {
+        return MutableStateFlow(Result.NotInitialized())
     }
 
     open fun getLoadingValue(params: Params?): T? {
         return null
     }
-
 }

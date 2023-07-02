@@ -1,4 +1,4 @@
-package com.merseyside.merseyLib.kotlin.coroutines.ext
+package com.merseyside.merseyLib.kotlin.coroutines.flow.ext
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
@@ -10,4 +10,12 @@ fun <T, R> Flow<T>.mapState(
     transform: suspend (data: T) -> R
 ): StateFlow<R> {
     return map(transform).stateIn(scope, started, initialValue)
+}
+
+fun <T> Flow<T>.mapToList(): Flow<List<T>> {
+    return map { listOf(it) }
+}
+
+fun <T, R> Flow<List<T>>.mapList(mapper: (T) -> R): Flow<List<R>> {
+    return map { list -> list.map(mapper) }
 }

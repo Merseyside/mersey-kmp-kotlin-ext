@@ -9,6 +9,7 @@ plugins {
         id(mersey.kotlin.extension.id())
         plugin(kotlin.kapt)
     }
+    `javadoc-stub-convention`
     `maven-publish-config`
 }
 
@@ -18,10 +19,11 @@ android {
 
     defaultConfig {
         minSdk = Application.minSdk
-        targetSdk = Application.targetSdk
     }
 
-    buildFeatures.dataBinding = true
+    buildFeatures {
+        dataBinding = true
+    }
 }
 
 kotlin {

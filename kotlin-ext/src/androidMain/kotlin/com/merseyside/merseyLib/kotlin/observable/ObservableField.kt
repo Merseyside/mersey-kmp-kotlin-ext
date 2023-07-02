@@ -9,16 +9,13 @@ import androidx.databinding.BaseObservable as AndroidObservable
 
 actual abstract class ObservableField<T> actual constructor(
     initialValue: T?
-) : AndroidObservable(),
-    ILogger {
+) : AndroidObservable(), ILogger {
+    @Bindable
     actual open var value: T? = initialValue
-        @Bindable get
         internal set(value) {
-            if (field != value) {
-                field = value
-                notifyPropertyChanged(BR.value)
-                notifyObservers()
-            }
+            field = value
+            notifyPropertyChanged(BR.value)
+            notifyObservers()
         }
 
     constructor(vararg dependencies: Observable) : this(null) {
@@ -33,13 +30,25 @@ actual abstract class ObservableField<T> actual constructor(
 
     protected actual val observerList: MutableList<(T) -> Unit> = mutableListOf()
 
-    actual fun observe(ignoreCurrent: Boolean, observer: (T) -> Unit): Disposable<T> {
+    actual fun observe(observer: (T) -> Unit): Disposable<T> {
+        return observe(ignoreCurrent = false, observer)
+    }
 
+    actual fun observe(ignoreCurrent: Boolean, observer: (T) -> Unit): Disposable<T> {
         observerList.add(observer)
         if (!ignoreCurrent) {
             value?.let {
                 observer(it)
             }
+        }
+
+        return Disposable(this, observer)
+    }
+
+    actual fun observeNullable(ignoreCurrent: Boolean, observer: (T?) -> Unit): Disposable<T> {
+        observerList.add(observer)
+        if (!ignoreCurrent) {
+            observer(value)
         }
 
         return Disposable(this, observer)
@@ -73,20 +82,23 @@ actual abstract class ObservableField<T> actual constructor(
 actual open class MutableObservableField<T> actual constructor(initialValue: T?) :
     ObservableField<T>(initialValue) {
 
+    @get:Bindable
     override var value: T?
-        @Bindable get() = super.value
-        @Bindable public set(v) {
+        get() = super.value
+        public set(v) {
             super.value = v
         }
 }
 
 actual open class SingleObservableField<T> actual constructor(initialValue: T?) :
     MutableObservableField<T>(initialValue) {
+    @get:Bindable
     actual override var value: T?
-        @Bindable set(v) {
+        get() = super.value.also {
+            if (it != null) value = null }
+        set(v) {
             super.value = v
         }
-        @Bindable get() = super.value.also { value = null }
 }
 
 actual class SingleObservableEvent : SingleObservableField<Unit>(null) {

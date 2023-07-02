@@ -2,14 +2,16 @@ package com.merseyside.merseyLib.kotlin.coroutines
 
 import com.merseyside.merseyLib.kotlin.logger.Logger
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
+import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import kotlinx.coroutines.*
 
 abstract class CoroutineUseCase<T, Params>(
+    observingScope: CoroutineScope = CoroutineScope(uiDispatcher),
     executionStrategy: ExecutionStrategy = ExecutionStrategy.CANCEL_PREV_JOB
-) : BaseCoroutineUseCase<T, Params>(executionStrategy) {
+) : BaseCoroutineUseCase<T, Params>(observingScope, executionStrategy) {
 
     fun execute(
-        coroutineScope: CoroutineScope = mainScope,
+        coroutineScope: CoroutineScope = observingScope,
         onPreExecute: () -> Unit = {},
         onComplete: (T) -> Unit = {},
         onError: (Throwable) -> Unit = {},

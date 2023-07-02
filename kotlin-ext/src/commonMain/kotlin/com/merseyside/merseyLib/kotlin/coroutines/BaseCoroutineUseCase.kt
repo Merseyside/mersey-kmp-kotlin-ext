@@ -2,11 +2,12 @@ package com.merseyside.merseyLib.kotlin.coroutines
 
 import com.merseyside.merseyLib.kotlin.coroutines.utils.CompositeJob
 import com.merseyside.merseyLib.kotlin.coroutines.utils.defaultDispatcher
-import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import kotlinx.coroutines.*
 
-abstract class BaseCoroutineUseCase<T, Params>(var executionStrategy: ExecutionStrategy) {
-    protected val mainScope: CoroutineScope by lazy { CoroutineScope(uiDispatcher) }
+abstract class BaseCoroutineUseCase<T, Params>(
+    protected val observingScope: CoroutineScope,
+    var executionStrategy: ExecutionStrategy
+) {
     private val asyncJob = SupervisorJob()
 
     private val compositeJob = CompositeJob()

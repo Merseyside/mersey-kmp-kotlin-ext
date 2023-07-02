@@ -5,9 +5,7 @@ package com.merseyside.merseyLib.kotlin.coroutines.timer
  */
 
 import com.merseyside.merseyLib.kotlin.logger.Logger
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.*
-import kotlinx.coroutines.withContext
 
 class CountDownTimer(
     private val delay: Long = 1000L,
@@ -21,9 +19,7 @@ class CountDownTimer(
 
     var state: CurrentTimerState = CurrentTimerState.STOPPED
         private set(value) {
-            if (field == CurrentTimerState.DESTROYED) {
-                return
-            }
+            if (field == CurrentTimerState.DESTROYED) return
             field = value
         }
 
@@ -50,44 +46,50 @@ class CountDownTimer(
     }
 
     fun stopTimer() {
-        val error = if (state == CurrentTimerState.STOPPED) {
-            TimerException(TimerErrorTypes.NO_TIMER_RUNNING)
-        } else {
-            null
+        runIfTimerNotDestroyed {
+            val error = if (state == CurrentTimerState.STOPPED) {
+                TimerException(TimerErrorTypes.NO_TIMER_RUNNING)
+            } else {
+                null
+            }
+            timerJob?.cancel()
+            state = CurrentTimerState.STOPPED
+            listener?.onStop(timerValue, error)
         }
-        timerJob?.cancel()
-        state = CurrentTimerState.STOPPED
-        listener?.onStop(timerValue, error)
     }
 
     fun restartTimer(value: Long) {
-        if (state == CurrentTimerState.DESTROYED) {
-            throw IllegalStateException("Timer destroyed!")
+        runIfTimerNotDestroyed {
+            if (state == CurrentTimerState.RUNNING || state == CurrentTimerState.PAUSED) {
+                stopTimer()
+            }
+            startTimer(value)
         }
 
-        if (state == CurrentTimerState.RUNNING) {
-            stopTimer()
-        }
-
-        startTimer(value)
     }
 
     fun pauseTimer() {
-        if (state == CurrentTimerState.PAUSED) {
-            Logger.logErr(TAG, "Already paused, check your code for multiple callers")
+        runIfTimerNotDestroyed {
+            if (state == CurrentTimerState.PAUSED) {
+                Logger.logErr(TAG, "Already paused, check your code for multiple callers")
+            } else {
+                state = CurrentTimerState.PAUSED
+                timerJob?.cancel()
+                listener?.onPause(timerValue)
+            }
         }
-        state = CurrentTimerState.PAUSED
-        timerJob?.cancel()
-        listener?.onPause(timerValue)
     }
 
     fun continueTimer() {
-        if (state == CurrentTimerState.RUNNING) {
-            Logger.logErr(TAG, "Already running, check your code for multiple callers")
+        runIfTimerNotDestroyed {
+            if (state == CurrentTimerState.PAUSED) {
+                state = CurrentTimerState.RUNNING
+                listener?.onContinue()
+                timerCanStart()
+            } else {
+                Logger.logErr(TAG, "Timer not paused")
+            }
         }
-        state = CurrentTimerState.RUNNING
-        listener?.onContinue()
-        timerCanStart()
     }
 
     fun destroyTimer() {
@@ -118,8 +120,7 @@ class CountDownTimer(
                     onTick(0L)
                     timerJob?.cancel()
                     listener?.onStop(0L)
-                }
-                else {
+                } else {
                     onTick(timerValue)
 
                     if (timerValue < delay) {
@@ -129,6 +130,14 @@ class CountDownTimer(
                     }
                 }
             }
+        }
+    }
+
+    private fun runIfTimerNotDestroyed(block: () -> Unit) {
+        if (state != CurrentTimerState.DESTROYED) {
+            block()
+        } else {
+            Logger.logErr(TAG, "Timer is destroyed. Need a new instance to work")
         }
     }
 

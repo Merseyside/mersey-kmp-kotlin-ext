@@ -14,8 +14,16 @@ fun <T> MutableList<T>.addOrSet(position: Int, element: T) {
  */
 fun <T> MutableList<T>.move(oldPosition: Int, newPosition: Int): T {
     val item = get(oldPosition)
-    removeAt(oldPosition)
-    add(newPosition, item)
+    if (oldPosition != newPosition) {
+        removeAt(oldPosition)
+
+        if (newPosition >= size) {
+            add(item)
+        } else {
+            add(newPosition, item)
+        }
+    }
+
     return item
 }
 
