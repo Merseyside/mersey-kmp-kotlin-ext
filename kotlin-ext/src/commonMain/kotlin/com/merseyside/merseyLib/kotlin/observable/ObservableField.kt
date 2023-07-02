@@ -9,6 +9,8 @@ expect abstract class ObservableField<T> constructor(initialValue: T?): ILogger 
 
     fun observe(ignoreCurrent: Boolean = false, observer: (T) -> Unit): Disposable<T>
 
+    fun observe(observer: (T) -> Unit): Disposable<T>
+
     fun observeNullable(ignoreCurrent: Boolean = false, observer: (T?) -> Unit): Disposable<T>
 
     fun removeObserver(block: (T) -> Unit): Boolean
@@ -37,3 +39,5 @@ class Disposable<T>(
         field.removeObserver(observer)
     }
 }
+
+typealias EventObservableField = ObservableField<Unit>

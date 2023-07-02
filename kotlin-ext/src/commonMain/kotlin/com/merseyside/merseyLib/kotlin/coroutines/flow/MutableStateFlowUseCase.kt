@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 
 abstract class MutableStateFlowUseCase<T, Params>(
-    coroutineScope: CoroutineScope = CoroutineScope(uiDispatcher)
+    coroutineScope: CoroutineScope = CoroutineScope(uiDispatcher),
+    startWhenCreated: Boolean = false
 ) : StateFlowUseCase<T, Params>(coroutineScope) {
 
     private val mutStateFlow: MutableStateFlow<T>
@@ -18,6 +19,14 @@ abstract class MutableStateFlowUseCase<T, Params>(
         set(value) {
             mutStateFlow.value = value
         }
+
+    init {
+        if (startWhenCreated) {
+            coroutineScope.launch {
+                provideStateFlow()
+            }
+        }
+    }
 
     protected abstract suspend fun updateWithParams(params: Params?): T
 
@@ -49,8 +58,4 @@ abstract class MutableStateFlowUseCase<T, Params>(
     internal fun updateValue(value: T): T {
         return mutStateFlow.updateAndGet { value }
     }
-
-//    operator fun invoke(initialValue: T): StateFlow<T> {
-//        return init(initialValue)
-//    }
 }

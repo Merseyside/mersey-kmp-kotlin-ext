@@ -11,6 +11,10 @@ actual abstract class ObservableField<T> actual constructor(initialValue: T?) : 
 
     protected actual val observerList: MutableList<(T) -> Unit> = mutableListOf()
 
+    actual fun observe(observer: (T) -> Unit): Disposable<T> {
+        return observe(ignoreCurrent = false, observer)
+    }
+
     actual fun observe(ignoreCurrent: Boolean, observer: (T) -> Unit): Disposable<T> {
 
         observerList.add(observer)
