@@ -1,1 +1,1 @@
-./gradlew publishToMavenLocal
+./gradlew publishToMavenLocal -PRELEASE_SIGNING_ENABLED=true
