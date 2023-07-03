@@ -13,6 +13,7 @@ dependencyResolutionManagement {
         val catalogGradle by creating {
             from("$group:catalog-version-gradle:$catalogVersions")
             version("mokoMobileMultiplatform", "0.14.1")
+            version("maven-publish-plugin", "0.25.3")
         }
     }
 }
