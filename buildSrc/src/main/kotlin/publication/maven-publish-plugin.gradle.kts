@@ -1,7 +1,9 @@
 import com.vanniktech.maven.publish.SonatypeHost
+import java.util.Base64
 
 plugins {
     id("com.vanniktech.maven.publish")
+    signing
 }
 
 mavenPublishing {
@@ -46,5 +48,30 @@ mavenPublishing {
     }
 
     publishToMavenCentral(SonatypeHost.S01)
+}
+
+signing {
+    val inMemoryKey = project.findProperty("signingInMemoryKey")?.toString()?.let { base64Key ->
+        val _base = base64Key.replace("\n", "")
+        String(Base64.getDecoder().decode(_base))
+    }
+    if (inMemoryKey != null) {
+        val inMemoryKeyId = project.findProperty("signingInMemoryKeyId")?.toString()
+        val inMemoryKeyPassword = project.findProperty("signingInMemoryKeyPassword")?.toString()
+
+        useInMemoryPgpKeys(inMemoryKeyId, inMemoryKey, inMemoryKeyPassword)
+        sign(publishing.publications)
+    }
+
+//    val signingKeyId: String? = project.getProperty("ORG_GRADLE_PROJECT_signingInMemoryKeyId")
+//    val signingPassword: String? = System.getenv("SIGNING_PASSWORD")
+//    val signingKey: String? = System.getenv("SIGNING_KEY")?.let { base64Key ->
+//        val _base = base64Key.replace("\n", "")
+//        String(Base64.getDecoder().decode(_base))
+//    }
+//    if (signingKeyId != null) {
+//        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+//        sign(publishing.publications)
+//    }
 }
 
