@@ -6,6 +6,7 @@ plugins {
 
 mavenPublishing {
     val projectGitUrl = "https://github.com/Merseyside/mersey-kmp-kotlin-ext"
+    println("key = ${project.findProperty("signingInMemoryKey")}")
 
     pom {
         name.set("Mersey kotlin extensions")
