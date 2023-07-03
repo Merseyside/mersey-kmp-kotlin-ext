@@ -1,1 +1,1 @@
-./gradlew -PlibraryPublish :kotlin-ext:publishToMavenLocal
+./gradlew publishToMavenLocal
