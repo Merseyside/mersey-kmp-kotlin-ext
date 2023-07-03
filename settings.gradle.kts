@@ -19,6 +19,7 @@ dependencyResolutionManagement {
 
         val catalogPlugins by creating {
             from("$group:catalog-version-plugins:$catalogVersions")
+            version("maven-publish-plugin", "0.25.3")
         }
     }
 }
