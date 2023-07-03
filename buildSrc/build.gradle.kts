@@ -11,5 +11,6 @@ dependencies {
         implementation(nexusPublish)
         implementation(kotlin.dokka)
         implementation(mersey.gradlePlugins)
+        implementation(maven.publish.plugin)
     }
 }
