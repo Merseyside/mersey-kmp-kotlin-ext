@@ -1,13 +1,3 @@
-buildscript {
-    repositories {
-        gradlePluginPortal()
-    }
-}
-
-//plugins {
-//    `nexus-config`
-//}
-
 allprojects {
     plugins.withId("org.gradle.maven-publish") {
         group = "io.github.merseyside"
