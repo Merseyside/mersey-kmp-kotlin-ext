@@ -4,9 +4,9 @@ buildscript {
     }
 }
 
-plugins {
-    `nexus-config`
-}
+//plugins {
+//    `nexus-config`
+//}
 
 allprojects {
     plugins.withId("org.gradle.maven-publish") {
