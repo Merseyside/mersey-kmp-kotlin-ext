@@ -5,7 +5,7 @@ plugins {
 dependencies {
     with(catalogGradle) {
         implementation(kotlin.gradle)
-        implementation(android.gradle)
+        implementation(android.gradle.stable)
         implementation(moko.mobileMultiplatform)
         implementation(kotlin.serialization)
         implementation(kotlin.dokka)

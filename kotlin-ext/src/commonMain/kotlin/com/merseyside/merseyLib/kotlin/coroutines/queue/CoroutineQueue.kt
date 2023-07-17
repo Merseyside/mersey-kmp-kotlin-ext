@@ -2,7 +2,7 @@ package com.merseyside.merseyLib.kotlin.coroutines.queue
 
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
 import com.merseyside.merseyLib.kotlin.coroutines.utils.defaultDispatcher
-import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
+import com.merseyside.merseyLib.kotlin.extensions.iteratePop
 import com.merseyside.merseyLib.kotlin.logger.ILogger
 import com.merseyside.merseyLib.kotlin.logger.Logger
 import com.merseyside.merseyLib.kotlin.utils.safeLet
@@ -59,8 +59,8 @@ class CoroutineQueue<Result, Args>(
     }
 
     private suspend fun runSequentialWork() = coroutineScope {
-        while (isActive && hasQueueWork) {
-            val workPair = workBuffer.removeFirst()
+        workBuffer.iteratePop { workPair ->
+            ensureActive()
             val deferred = startNewJobAsync(workPair.first)
             completeJob(deferred.await(), workPair.second)
         }
