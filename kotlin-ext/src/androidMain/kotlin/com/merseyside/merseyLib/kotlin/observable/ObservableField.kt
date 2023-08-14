@@ -7,9 +7,9 @@ import com.merseyside.merseyLib.kotlin.extensions.isNotZero
 import com.merseyside.merseyLib.kotlin.logger.ILogger
 import androidx.databinding.BaseObservable as AndroidObservable
 
-actual abstract class ObservableField<T> actual constructor(
-    initialValue: T?
-) : AndroidObservable(), ILogger {
+actual abstract class ObservableField<T> actual constructor(initialValue: T?) :
+    AndroidObservable(), ILogger {
+
     @Bindable
     actual open var value: T? = initialValue
         internal set(value) {
@@ -28,37 +28,44 @@ actual abstract class ObservableField<T> actual constructor(
         }
     }
 
-    protected actual val observerList: MutableList<(T) -> Unit> = mutableListOf()
+    protected actual val nullableObserverList: MutableSet<Observer<T?>> = mutableSetOf()
+    protected actual val observerList: MutableSet<Observer<T>> = mutableSetOf()
 
-    actual fun observe(observer: (T) -> Unit): Disposable<T> {
+    actual fun observe(
+        ignoreCurrent: Boolean,
+        observer: Observer<T>
+    ): Disposable<T> {
+        observerList.add(observer)
+        if (!ignoreCurrent) {
+            value?.let { observer(it) }
+        }
+        return Disposable(this, observer)
+    }
+
+    actual fun observe(observer: Observer<T>): Disposable<T> {
         return observe(ignoreCurrent = false, observer)
     }
 
-    actual fun observe(ignoreCurrent: Boolean, observer: (T) -> Unit): Disposable<T> {
-        observerList.add(observer)
-        if (!ignoreCurrent) {
-            value?.let {
-                observer(it)
-            }
-        }
-
-        return Disposable(this, observer)
-    }
-
-    actual fun observeNullable(ignoreCurrent: Boolean, observer: (T?) -> Unit): Disposable<T> {
-        observerList.add(observer)
+    actual fun observeNullable(
+        ignoreCurrent: Boolean,
+        observer: Observer<T?>
+    ): Disposable<T> {
+        nullableObserverList.add(observer)
         if (!ignoreCurrent) {
             observer(value)
         }
-
         return Disposable(this, observer)
     }
 
-    actual fun removeObserver(block: (T) -> Unit): Boolean {
-        return observerList.remove(block)
+    actual fun removeObserver(observer: Observer<*>): Boolean {
+        return nullableObserverList.remove(observer) || observerList.remove(observer)
     }
 
     protected actual fun notifyObservers() {
+        if (nullableObserverList.isNotEmpty()) {
+            nullableObserverList.forEach { observer -> observer(value) }
+        }
+
         value?.let {
             if (observerList.isNotEmpty()) {
                 observerList.forEach { observer -> observer(it) }
@@ -67,7 +74,12 @@ actual abstract class ObservableField<T> actual constructor(
     }
 
     actual fun removeAllObservers() {
+        nullableObserverList.clear()
         observerList.clear()
+    }
+
+    actual fun interface Observer<in T> {
+        actual operator fun invoke(value: T)
     }
 
     override val tag: String = "ObservableField"
@@ -95,7 +107,8 @@ actual open class SingleObservableField<T> actual constructor(initialValue: T?) 
     @get:Bindable
     actual override var value: T?
         get() = super.value.also {
-            if (it != null) value = null }
+            if (it != null) value = null
+        }
         set(v) {
             super.value = v
         }

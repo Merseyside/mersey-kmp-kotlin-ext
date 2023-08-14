@@ -1,6 +1,7 @@
 package com.merseyside.merseyLib.kotlin.coroutines.flow
 
 import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
+import com.merseyside.merseyLib.kotlin.logger.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.updateAndGet
@@ -50,6 +51,7 @@ abstract class MutableStateFlowUseCase<T, Params>(
             try {
                 onComplete(update(params))
             } catch(e: Throwable) {
+                Logger.logErr(e)
                 onError(e)
             }
         }

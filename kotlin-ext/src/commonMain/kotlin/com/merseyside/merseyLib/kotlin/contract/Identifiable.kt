@@ -1,11 +1,10 @@
 package com.merseyside.merseyLib.kotlin.contract
 
 interface Identifiable<Id> {
-
-    fun getId(): Id
+    val id: Id
 }
 
 fun <T> T.areItemsTheSame(other: T): Boolean
-    where T : Identifiable<Any> {
-    return getId() == other.getId()
+    where T : Identifiable<out Any> {
+    return id == other.id
 }
