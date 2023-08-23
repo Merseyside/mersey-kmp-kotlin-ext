@@ -38,10 +38,19 @@ fun <T, Params> BaseCoroutineUseCase<T, Params>.toResultStateFlow(
 }
 
 fun <T, Params> BaseCoroutineUseCase<T, Params>.toFlow(
-    params: () -> Params? = {null}
+    lazyParams: () -> Params? = { null }
 ): Flow<T> {
     return flow {
-        val result = this@toFlow.invoke(params())
+        val result = this@toFlow.invoke(lazyParams())
+        emit(result)
+    }
+}
+
+fun <T, Params> BaseCoroutineUseCase<T, Params>.toFlow(
+    params: Params? = null
+): Flow<T> {
+    return flow {
+        val result = this@toFlow.invoke(params)
         emit(result)
     }
 }

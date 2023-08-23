@@ -22,10 +22,8 @@ abstract class FlowUseCase<T, Params> {
             field = value
         }
 
-    @ExperimentalCoroutinesApi
-    protected abstract fun getFlow(params: Params?): Flow<T>
+    abstract fun getFlow(params: Params? = null): Flow<T>
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun observe(
         coroutineScope: CoroutineScope = mainScope,
         params: Params? = null,
