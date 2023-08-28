@@ -49,7 +49,7 @@ kotlinExtension {
 val libs = listOf(
     common.kotlin.stdlib,
     common.serialization,
-    common.reflect
+    common.kotlin.reflect
 )
 
 dependencies {
