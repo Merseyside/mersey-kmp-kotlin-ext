@@ -64,14 +64,15 @@ fun Collection<Double?>.toJsonArray(): JsonArray {
 inline fun <reified T : Any> Collection<T?>.toJsonArray(json: Json = JsonConfigurator.json): JsonArray {
     return buildJsonArray {
         forEach { item ->
-            item?.toJsonObject(json)?.let {
-                add(it)
-            } ?: run {
-                val bool: Boolean? = null
-                add(bool)
-            }
+            if (item == null) add(null)
+            else add(item.toJsonElement(json))
         }
     }
+}
+
+inline fun <reified T : Any> T.toJsonElement(json: Json = JsonConfigurator.json): JsonElement {
+    val string = serialize(json)
+    return string.deserialize(json)
 }
 
 inline fun <reified T : Any> T.toJsonObject(json: Json = JsonConfigurator.json): JsonObject {

@@ -34,6 +34,16 @@ fun <T1, T2> Iterable<T1>.subtractBy(
     }.toSet()
 }
 
+fun <T1, T2> Iterable<T1>.intersectBy(
+    other: Iterable<T2>,
+    predicate: (first: T1, second: T2) -> Boolean
+): Set<T1> {
+    if (other.count().isZero()) return toSet()
+    return filter { first ->
+        other.find { second -> predicate(first, second) } != null
+    }.toSet()
+}
+
 inline fun <reified R> Iterable<R>.findIsInstance(): R {
     return filterIsInstance<R>().first()
 }

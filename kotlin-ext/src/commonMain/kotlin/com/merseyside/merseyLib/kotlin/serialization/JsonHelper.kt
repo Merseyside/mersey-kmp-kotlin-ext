@@ -61,3 +61,7 @@ fun JsonObjectBuilder.putSafe(key: String, value: JsonElement?): JsonElement? {
 fun JsonObjectBuilder.putSafe(key: String, value: Boolean?): JsonElement? {
     return value?.let { put(key, value) }
 }
+
+inline fun <reified T> JsonObjectBuilder.put(key: String, list: List<T?>): JsonElement? {
+    return put(key, list.toJsonArray())
+}

@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.merseyside.merseyLib.kotlin.reflect
 
 import kotlin.reflect.KCallable
@@ -6,7 +8,9 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.primaryConstructor
 
-actual interface ReflectionHelper
+actual interface ReflectionHelper {
+    actual val source: Any
+}
 /**
  * Sets [value] to a property with name passed in [name]
  */
@@ -15,7 +19,7 @@ actual fun ReflectionHelper.set(name: String, value: Any) {
 
     if (property != null) {
         return if (property is KMutableProperty<*>) {
-            property.setter.call(this, value)
+            property.setter.call(source, value)
         } else {
             throw IllegalAccessException()
         }
@@ -27,12 +31,12 @@ actual fun ReflectionHelper.set(name: String, value: Any) {
 /**
  * @return an object by [name]
  */
-actual fun <T> ReflectionHelper.get(name: String): T? {
+actual fun <T> ReflectionHelper.get(name: String): T {
     val property = getPropertyByName(name)
 
     if (property != null) {
         return if (property is KProperty) {
-            property.getter.call(this) as T
+            property.getter.call(source) as T
         } else {
             throw IllegalAccessException()
         }
@@ -45,7 +49,7 @@ actual fun <T> ReflectionHelper.get(name: String): T? {
  * @return constructor's field names
  */
 actual fun ReflectionHelper.getConstructorFields(): List<String>? {
-    return this::class.primaryConstructor?.parameters
+    return source::class.primaryConstructor?.parameters
         ?.mapNotNull { it.name }
 }
 
@@ -53,12 +57,9 @@ actual fun ReflectionHelper.getConstructorFields(): List<String>? {
  * @return all member names
  */
 actual fun ReflectionHelper.getMemberNames(): List<String> {
-    return this::class.declaredMemberProperties.map {
-        it.name
-    }
+    return this::class.declaredMemberProperties.map { it.name }
 }
 
 private fun ReflectionHelper.getPropertyByName(name: String): KCallable<*>? {
-    return this::class.members.find { it.name == name }
+    return source::class.members.find { it.name == name }
 }
-

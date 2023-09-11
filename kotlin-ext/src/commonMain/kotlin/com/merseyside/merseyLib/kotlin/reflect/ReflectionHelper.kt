@@ -1,7 +1,9 @@
 package com.merseyside.merseyLib.kotlin.reflect
 
-expect interface ReflectionHelper
+expect interface ReflectionHelper {
 
+    val source: Any
+}
     /**
      * Sets [value] to a property with name passed in [name]
      */
@@ -10,7 +12,7 @@ expect interface ReflectionHelper
     /**
      * @return an object by [name]
      */
-    expect fun <T> ReflectionHelper.get(name: String): T?
+    expect fun <T> ReflectionHelper.get(name: String): T
 
     /**
      * @return constructor's field names
