@@ -12,8 +12,6 @@ class CoroutineQueue<Result, Args>(
     var scope: CoroutineScope = CoroutineScope(defaultDispatcher)
 ) : ILogger {
 
-    var fallOnException: Boolean = false
-
     val hasQueueWork: Boolean
         get() = workBuffer.isNotEmpty()
 
@@ -27,7 +25,7 @@ class CoroutineQueue<Result, Args>(
 
     var onPreExecute: () -> Unit = {}
     var onComplete: (Result, Args?) -> Unit = { _, _ -> }
-    var onError: (Throwable) -> Unit = {}
+    var onError: (Throwable) -> Unit = { throwable -> throw throwable }
     var onPostExecute: () -> Unit = {}
 
     fun add(resultProvider: suspend () -> Result) {
@@ -49,8 +47,7 @@ class CoroutineQueue<Result, Args>(
             throw exception
         } catch (throwable: Throwable) {
             Logger.logErr("CoroutineQueue", throwable)
-            if (fallOnException) throw throwable
-            else onError(throwable)
+            onError(throwable)
         }
 
         onPostExecute()
