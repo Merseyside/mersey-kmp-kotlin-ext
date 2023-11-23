@@ -1,7 +1,6 @@
 package com.merseyside.merseyLib.kotlin.coroutines.queue
 
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
-import com.merseyside.merseyLib.kotlin.coroutines.utils.defaultDispatcher
 import com.merseyside.merseyLib.kotlin.extensions.iteratePop
 import com.merseyside.merseyLib.kotlin.logger.ILogger
 import com.merseyside.merseyLib.kotlin.logger.Logger
@@ -9,7 +8,7 @@ import com.merseyside.merseyLib.kotlin.utils.safeLet
 import kotlinx.coroutines.*
 
 class CoroutineQueue<Result, Args>(
-    var scope: CoroutineScope = CoroutineScope(defaultDispatcher)
+    var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : ILogger {
 
     val hasQueueWork: Boolean

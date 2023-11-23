@@ -1,9 +1,7 @@
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     with(catalogPlugins.plugins) {
         plugin(android.library)
         plugin(kotlin.multiplatform)
-        plugin(moko.multiplatform)
         plugin(kotlin.serialization)
         id(mersey.android.extension.id())
         id(mersey.kotlin.extension.id())
@@ -26,35 +24,31 @@ android {
 }
 
 kotlin {
-    android {
+    androidTarget {
         publishLibraryVariants("release", "debug")
         publishLibraryVariantsGroupedByFlavor = true
     }
 
-    ios()
-    // Add the ARM64 simulator target
+    // Add apple targets
+    iosArm64()
+    iosX64()
     iosSimulatorArm64()
 
-    sourceSets {
-        val iosMain by getting
-        val iosSimulatorArm64Main by getting
-        iosSimulatorArm64Main.dependsOn(iosMain)
-    }
+    applyDefaultHierarchyTemplate()
 }
 
 kotlinExtension {
-    compilerArgs = listOf("-opt-in=kotlin.RequiresOptIn")
+    compilerArgs = listOf("-opt-in=kotlin.RequiresOptIn", "-Xexpect-actual-classes")
 }
 
 val libs = listOf(
     common.kotlin.stdlib,
     common.serialization,
-    common.kotlin.reflect
+    common.kotlin.reflect,
+    multiplatformLibs.coroutines
 )
 
 dependencies {
+    implementation(androidLibs.androidx.core)
     libs.forEach { lib -> commonMainImplementation(lib) }
-    commonMainImplementation(multiplatformLibs.coroutines)
-
-
 }

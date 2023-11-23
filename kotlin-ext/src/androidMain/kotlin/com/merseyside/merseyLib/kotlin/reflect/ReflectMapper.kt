@@ -15,11 +15,11 @@ actual class ReflectMapper {
             val wrapper = ReflectWrapper(value)
             val creator = ReflectInstanceCreator.initWith<R>()
 
-            val inParams: List<KProperty<*>> = wrapper.properties.log("kek2")
+            val inParams: List<KProperty<*>> = wrapper.properties
             val outParams: List<KParameter> = creator.getPrimaryConstructorParams()
 
             val mappingActions: List<() -> Any?> = outParams.mapNotNull { outParam ->
-                val foundProp = inParams.find { inProp -> inProp.name.log("kek") == outParam.name }
+                val foundProp = inParams.find { inProp -> inProp.name == outParam.name }
 
                 if (foundProp != null) {
                     { createMappingAction(fallback, wrapper, foundProp, outParam) }

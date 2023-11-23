@@ -4,18 +4,35 @@ import com.merseyside.merseyLib.kotlin.observable.*
 
 fun mergeSingleEvent(
     observableFieldList: List<ObservableField<Unit>>
-): EventObservableField {
-    val mutField = SingleObservableEvent()
+): EventObservableField = object : SingleObservableEvent() {
 
-    val observer = ObservableField.Observer<Unit> {
-        mutField.call()
+    private val mergingFields: List<ObservableField<Unit>> = observableFieldList
+
+    private val observer = Observer<Unit> {
+        call()
     }
 
-    observableFieldList.forEach { field ->
-        field.observe(observer)
+    override fun addObserver(observer: Observer<Unit>): Disposable<Unit> {
+        val fieldDisposable = super.addObserver(observer)
+        val disposables = mergingFields.map { field ->
+            field.observe(this.observer)
+        }
+
+        return object : Disposable<Unit>() {
+
+            private var disposables: List<Disposable<Unit>> = disposables
+
+            override fun dispose(): Boolean {
+                this.disposables.forEach { disposable -> disposable.dispose() }
+                this.disposables = emptyList()
+
+                return fieldDisposable.dispose()
+            }
+        }
     }
 
-    return mutField
+    override val tag: String
+        get() = "MergedSingleEvent"
 }
 
 fun <T> merge(
@@ -27,7 +44,8 @@ fun <T> merge(
     }
 
     observableFieldList.forEach { field ->
-        field.observe(observer) }
+        field.observe(observer)
+    }
     return mutField
 }
 

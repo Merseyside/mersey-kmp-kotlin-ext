@@ -1,15 +1,13 @@
 package com.merseyside.merseyLib.kotlin.coroutines.flow
 
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
-import com.merseyside.merseyLib.kotlin.coroutines.utils.defaultDispatcher
-import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import com.merseyside.merseyLib.kotlin.logger.Logger
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
 abstract class FlowUseCase<T, Params> {
 
-    protected val mainScope: CoroutineScope by lazy { CoroutineScope(uiDispatcher) }
+    protected val mainScope: CoroutineScope by lazy { CoroutineScope(Dispatchers.Main) }
 
     var job: Job? = null
         set(value) {
@@ -46,7 +44,7 @@ abstract class FlowUseCase<T, Params> {
                         onError.invoke(cause)
                     }
                 }
-            }.flowOn(defaultDispatcher)
+            }.flowOn(Dispatchers.IO)
 
         return coroutineScope.launch {
             flow.collect { data ->

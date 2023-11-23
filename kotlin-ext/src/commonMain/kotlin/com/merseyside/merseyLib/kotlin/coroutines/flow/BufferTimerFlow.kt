@@ -7,9 +7,7 @@ import com.merseyside.merseyLib.kotlin.extensions.isNotZero
 import com.merseyside.merseyLib.kotlin.extensions.isZero
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -64,6 +62,7 @@ class BufferTimerFlow<T>(
     }
 
     private suspend fun internalEmit() {
+        sharedFlow.buffer()
         sharedFlow.emit(list.toList())
         list.clear()
     }

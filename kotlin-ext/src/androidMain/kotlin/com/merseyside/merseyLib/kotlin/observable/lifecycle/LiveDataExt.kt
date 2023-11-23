@@ -4,10 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.merseyside.merseyLib.kotlin.observable.ObservableField
 
-fun <T> ObservableField<T>.asLiveData(): LiveData<T> {
+fun <T> ObservableField<T>.asLiveData(ignoreCurrent: Boolean = false): LiveData<T> {
     val liveData = MutableLiveData<T>()
 
-    observe(ignoreCurrent = false) { value ->
+    observe(ignoreCurrent) { value ->
         liveData.value = value
     }
 

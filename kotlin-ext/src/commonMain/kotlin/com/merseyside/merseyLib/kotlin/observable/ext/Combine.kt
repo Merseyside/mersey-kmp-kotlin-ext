@@ -3,6 +3,7 @@ package com.merseyside.merseyLib.kotlin.observable.ext
 import com.merseyside.merseyLib.kotlin.observable.MutableObservableField
 import com.merseyside.merseyLib.kotlin.observable.ObservableField
 
+@Suppress("UNCHECKED_CAST")
 private fun <T, R> combine(
     vararg fields: ObservableField<*>,
     transform: (List<T>) -> R

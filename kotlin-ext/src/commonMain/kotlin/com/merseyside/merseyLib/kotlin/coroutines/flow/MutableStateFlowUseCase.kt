@@ -1,14 +1,14 @@
 package com.merseyside.merseyLib.kotlin.coroutines.flow
 
-import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import com.merseyside.merseyLib.kotlin.logger.Logger
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 
 abstract class MutableStateFlowUseCase<T, Params>(
-    coroutineScope: CoroutineScope = CoroutineScope(uiDispatcher),
+    coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main),
     startWhenCreated: Boolean = false
 ) : StateFlowUseCase<T, Params>(coroutineScope) {
 
@@ -24,14 +24,14 @@ abstract class MutableStateFlowUseCase<T, Params>(
     init {
         if (startWhenCreated) {
             coroutineScope.launch {
-                provideStateFlow()
+                provideStateFlow(coroutineScope)
             }
         }
     }
 
     protected abstract suspend fun updateWithParams(params: Params?): T
 
-    abstract override fun provideStateFlow(): MutableStateFlow<T>
+    abstract override fun provideStateFlow(coroutineScope: CoroutineScope): MutableStateFlow<T>
 
     open suspend fun update(params: Params? = null): T {
         val value = execute(params) {

@@ -1,35 +1,64 @@
 package com.merseyside.merseyLib.kotlin.extensions
 
-fun <T> MutableList<T>.addOrSet(position: Int, element: T) {
-    if (position > lastIndex) {
-        add(position, element)
-    } else {
-        set(position, element)
-    }
+private fun <T> List<T>.indexOffset(fromIndex: Int, offset: Int): Int {
+    val offsetIndex = fromIndex + offset
+    if (offsetIndex > lastIndex) throw IndexOutOfBoundsException()
+    return offsetIndex
+}
+
+private fun <T> List<T>.backwardIndexOffset(toIndex: Int, offset: Int): Int {
+    val offsetIndex = toIndex - offset
+    if (offsetIndex < 0) throw IndexOutOfBoundsException()
+    return offsetIndex
+}
+
+private fun <T> List<T>.indexOffsetSafe(fromIndex: Int, offset: Int): Int {
+    return try {
+        indexOffset(fromIndex, offset)
+    } catch (e: IndexOutOfBoundsException) { size }
+}
+
+private fun <T> List<T>.backwardIndexOffsetSafe(toIndex: Int, offset: Int): Int {
+    return try {
+        backwardIndexOffset(toIndex, offset)
+    } catch (e: IndexOutOfBoundsException) { 0 }
 }
 
 /**
- * Moves item from old position to new position
- * @return moved item
+ * @param anchorIndex always inclusive
  */
-fun <T> MutableList<T>.move(oldPosition: Int, newPosition: Int): T {
-    val item = get(oldPosition)
-    if (oldPosition != newPosition) {
-        removeAt(oldPosition)
-
-        if (newPosition >= size) {
-            add(item)
-        } else {
-            add(newPosition, item)
-        }
+fun <T> List<T>.subListSafe(anchorIndex: Int, count: Int? = null, backwardCount: Int? = null): List<T> {
+    check(anchorIndex >= 0) {
+        "anchorIndex can not be negative!"
     }
 
-    return item
+    check(anchorIndex < size) {
+        "anchorIndex equals $anchorIndex but size is $size"
+    }
+
+    check(count != null || backwardCount != null) {
+        "Count or/and backwardCount weren't passed!"
+    }
+
+    val mutSet = mutableSetOf<T>()
+
+    if (backwardCount != null) {
+        if (backwardCount == 0) return emptyList()
+
+        val index = backwardIndexOffsetSafe(toIndex = anchorIndex, offset = backwardCount - 1)
+        mutSet.addAll(subList(index, anchorIndex + 1))
+    }
+
+    if (count != null) {
+        if (count == 0) return emptyList()
+
+        val index = indexOffsetSafe(fromIndex = anchorIndex, offset = count)
+        mutSet.addAll(subList(anchorIndex, index))
+    }
+
+    return mutSet.toList()
 }
 
-fun <T> MutableList<T>.move(item: T, newPosition: Int): T {
-    val oldPosition = indexOf(item)
-    removeAt(oldPosition)
-    add(newPosition, item)
-    return item
+fun <T> List<T>.subListSafe(anchorIndex: Int, offset: Int): List<T> {
+    return subListSafe(anchorIndex, offset, offset)
 }

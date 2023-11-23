@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 
 fun <T, Params> BaseCoroutineUseCase<T, Params>.toResultFlow(
-    params: () -> Params? = {null}
+    params: () -> Params? = { null }
 ): Flow<Result<T>> {
     return flow {
         emit(Result.Loading())

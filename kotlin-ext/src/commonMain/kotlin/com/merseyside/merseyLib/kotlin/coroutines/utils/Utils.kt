@@ -22,7 +22,7 @@ suspend fun debounce(
     destinationFunction.invoke()
 }
 
-suspend fun repeatInfinite(
+suspend fun repeatUntilCancel(
     delay: Long = 0,
     repeatBlock: suspend () -> Unit
 ) = coroutineScope {

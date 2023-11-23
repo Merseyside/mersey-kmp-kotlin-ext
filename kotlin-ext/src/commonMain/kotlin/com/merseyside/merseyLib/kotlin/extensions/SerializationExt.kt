@@ -3,6 +3,7 @@ package com.merseyside.merseyLib.kotlin.extensions
 import com.merseyside.merseyLib.kotlin.serialization.JsonConfigurator
 import com.merseyside.merseyLib.kotlin.serialization.deserialize
 import com.merseyside.merseyLib.kotlin.serialization.serialize
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.*
 import kotlin.jvm.JvmName
 
@@ -60,6 +61,7 @@ fun Collection<Double?>.toJsonArray(): JsonArray {
     }
 }
 
+@ExperimentalSerializationApi
 @JvmName("toAnyJsonArray")
 inline fun <reified T : Any> Collection<T?>.toJsonArray(json: Json = JsonConfigurator.json): JsonArray {
     return buildJsonArray {

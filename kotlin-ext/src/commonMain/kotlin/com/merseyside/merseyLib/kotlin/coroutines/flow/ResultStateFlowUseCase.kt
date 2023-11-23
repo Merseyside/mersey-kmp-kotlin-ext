@@ -1,14 +1,13 @@
 package com.merseyside.merseyLib.kotlin.coroutines.flow
 
-import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import com.merseyside.merseyLib.kotlin.entity.result.Result
-import com.merseyside.merseyLib.kotlin.entity.result.isInitialized
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 abstract class ResultStateFlowUseCase<T, Params>(
-    coroutineScope: CoroutineScope = CoroutineScope(uiDispatcher),
+    coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main),
     initialValue: Result<T> = Result.NotInitialized()
 ): MutableStateFlowUseCase<Result<T>, Params>(coroutineScope) {
 
@@ -35,7 +34,7 @@ abstract class ResultStateFlowUseCase<T, Params>(
         }
     }
 
-    override fun provideStateFlow(): MutableStateFlow<Result<T>> {
+    override fun provideStateFlow(coroutineScope: CoroutineScope): MutableStateFlow<Result<T>> {
         return MutableStateFlow(Result.NotInitialized())
     }
 

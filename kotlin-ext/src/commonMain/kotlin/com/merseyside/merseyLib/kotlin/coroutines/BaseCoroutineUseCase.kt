@@ -1,37 +1,43 @@
 package com.merseyside.merseyLib.kotlin.coroutines
 
-import com.merseyside.merseyLib.kotlin.coroutines.utils.CompositeJob
-import com.merseyside.merseyLib.kotlin.coroutines.utils.defaultDispatcher
+import com.merseyside.merseyLib.kotlin.logger.ILogger
+import com.merseyside.merseyLib.kotlin.logger.Logger
 import kotlinx.coroutines.*
 
 abstract class BaseCoroutineUseCase<T, Params>(
     protected val observingScope: CoroutineScope,
-    var executionStrategy: ExecutionStrategy
-) {
+    private val executionStrategy: ExecutionStrategy
+): ILogger {
     private val asyncJob = SupervisorJob()
 
-    private val compositeJob = CompositeJob()
+    private var jobList: MutableList<Deferred<T>> = mutableListOf()
 
     val isActive: Boolean
-        get() = compositeJob.isActive
+        get() = jobList.any { job -> job.isActive }
 
     protected abstract suspend fun doWork(params: Params?): T
 
     internal suspend fun executeAsync(params: Params?): T = coroutineScope {
-        if (executionStrategy == ExecutionStrategy.CANCEL_PREV_JOB) compositeJob.cancel()
+        if (executionStrategy == ExecutionStrategy.CANCEL_PREV_JOB) this@BaseCoroutineUseCase.cancel()
 
-        compositeJob.add {
-            async(asyncJob + defaultDispatcher) {
-                doWork(params)
-            }
-        }
-    }.await()
+        async(asyncJob + Dispatchers.IO) {
+            doWork(params)
+        }.also { job -> jobList.add(job) }
+
+    }.also { job -> job.invokeOnCompletion { jobList.remove(job) } }.await()
 
     fun cancel(cause: CancellationException? = null): Boolean {
-        return compositeJob.cancel(cause)
+        Logger.logErr(tag, "Cancel coroutine use case")
+        val isActive = isActive
+        jobList.forEach { job -> job.cancel(cause) }
+        jobList.clear()
+        return isActive
     }
 
     suspend operator fun invoke(params: Params? = null) = executeAsync(params)
+
+    override val tag: String
+        get() = this::class.simpleName ?: "UnknownCoroutineUseCase"
 }
 
 enum class ExecutionStrategy {

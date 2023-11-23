@@ -2,33 +2,32 @@ package com.merseyside.merseyLib.kotlin.observable.ext
 
 import android.os.Handler
 import android.os.Looper
+import com.merseyside.merseyLib.kotlin.observable.Disposable
 import com.merseyside.merseyLib.kotlin.observable.MutableObservableField
 import com.merseyside.merseyLib.kotlin.observable.ObservableField
-import com.merseyside.merseyLib.kotlin.observable.SingleObservableEvent
-import com.merseyside.merseyLib.kotlin.utils.safeLet
 
-actual inline fun <reified T> ObservableField<T>.debounce(millis: Long): ObservableField<T> {
+actual inline fun <reified F : ObservableField<T>, reified T> F.debounce(millis: Long): ObservableField<T> =
+    object : MutableObservableField<T>() {
+        override fun addObserver(observer: Observer<T>): Disposable<T> {
+            val disposable = super.addObserver(observer)
 
-    val runnable: Runnable
-    val mutableObservableField = if (T::class == Unit::class) {
-        val temp = SingleObservableEvent()
-        runnable = Runnable { temp.call() }
-        temp
-    } else {
-        val temp = MutableObservableField(value)
-        runnable = Runnable { temp.value = this.value }
-        temp
-    }
+            val runnable = Runnable {
+                value = if (T::class == Unit::class) Unit as T
+                else this@debounce.value
+            }
 
-    val looper = Looper.myLooper()
-    safeLet(looper) {
-        val handler = Handler(it)
-        this.observe { _ ->
-            handler.removeCallbacks(runnable)
-            handler.postDelayed(runnable, millis)
+            val looper = Looper.getMainLooper()
+            val handler = Handler(looper)
+            val sourceDisposable = this@debounce.observe { _ ->
+                handler.removeCallbacks(runnable)
+                handler.postDelayed(runnable, millis)
+            }
+
+            return object : Disposable<T>() {
+                override fun dispose(): Boolean {
+                    sourceDisposable.dispose()
+                    return disposable.dispose()
+                }
+            }
         }
-
     }
-
-    return mutableObservableField as ObservableField<T>
-}

@@ -12,6 +12,8 @@ expect abstract class ObservableField<T> constructor(initialValue: T?): ILogger 
 
     fun observe(observer: Observer<T>): Disposable<T>
 
+    open fun addObserver(observer: Observer<T>): Disposable<T>
+
     fun observeNullable(ignoreCurrent: Boolean = false, observer: Observer<T?>): Disposable<T>
 
     fun removeObserver(observer: Observer<*>): Boolean
@@ -32,15 +34,21 @@ expect open class SingleObservableField<T>(initialValue: T? = null) : MutableObs
     override var value: T?
 }
 
-expect class SingleObservableEvent(): SingleObservableField<Unit> {
+expect open class SingleObservableEvent(): SingleObservableField<Unit> {
     fun call()
 }
 
-class Disposable<T>(
+abstract class Disposable<T> {
+
+    abstract fun dispose(): Boolean
+}
+
+class SingleDisposable<T>(
     private val field: ObservableField<T>,
     private val observer: ObservableField.Observer<*>
-) {
-    fun dispose(): Boolean {
+): Disposable<T>() {
+
+    override fun dispose(): Boolean {
         return field.removeObserver(observer)
     }
 }

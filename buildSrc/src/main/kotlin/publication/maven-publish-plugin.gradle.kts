@@ -10,7 +10,7 @@ mavenPublishing {
     pom {
         name.set("Mersey kotlin extensions")
         description.set("Multiplatform kotlin extensions library")
-        url.set("https://github.com/Merseyside/mersey-kmp-kotlin-ext")
+        url.set(projectGitUrl)
 
         licenses {
             license {

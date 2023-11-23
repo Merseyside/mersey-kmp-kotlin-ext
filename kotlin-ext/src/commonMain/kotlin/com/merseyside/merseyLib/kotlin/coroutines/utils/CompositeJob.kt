@@ -30,10 +30,13 @@ class CompositeJob {
      */
     fun cancel(cause: CancellationException? = null): Boolean {
         val saved = isActive
-
         jobList.forEach { it.cancel(cause) }
-        jobList.clear()
+        clear()
 
         return saved
+    }
+
+    fun clear() {
+        jobList.clear()
     }
 }
