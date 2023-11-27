@@ -27,7 +27,9 @@ abstract class BaseCoroutineUseCase<T, Params>(
     }.also { job -> job.invokeOnCompletion { jobList.remove(job) } }.await()
 
     fun cancel(cause: CancellationException? = null): Boolean {
-        Logger.logErr(tag, "Cancel coroutine use case")
+        if (isActive) {
+            Logger.logErr(tag, "Cancel loading coroutine use case")
+        }
         val isActive = isActive
         jobList.forEach { job -> job.cancel(cause) }
         jobList.clear()
@@ -37,7 +39,7 @@ abstract class BaseCoroutineUseCase<T, Params>(
     suspend operator fun invoke(params: Params? = null) = executeAsync(params)
 
     override val tag: String
-        get() = this::class.simpleName ?: "UnknownCoroutineUseCase"
+        get() = this::class.simpleName?.take(23) ?: "UnknownCoroutineUseCase"
 }
 
 enum class ExecutionStrategy {
