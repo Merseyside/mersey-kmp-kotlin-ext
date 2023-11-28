@@ -1,20 +1,18 @@
 package com.merseyside.merseyLib.kotlin.coroutines.flow
 
-import com.merseyside.merseyLib.kotlin.coroutines.utils.defaultDispatcher
-import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import com.merseyside.merseyLib.kotlin.logger.ILogger
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.StateFlow
 
 abstract class StateFlowUseCase<T, Params>(
-    val coroutineScope: CoroutineScope = CoroutineScope(uiDispatcher)
+    val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 ): ILogger {
 
     private val asyncJob = SupervisorJob()
 
     val stateFlow: StateFlow<T> by lazy {
-        provideStateFlow()
+        provideStateFlow(coroutineScope)
     }
 
     open val value: T
@@ -33,13 +31,13 @@ abstract class StateFlowUseCase<T, Params>(
     val isActive: Boolean
         get() = job?.isActive ?: false
 
-    protected abstract fun provideStateFlow(): StateFlow<T>
+    protected abstract fun provideStateFlow(coroutineScope: CoroutineScope): StateFlow<T>
 
     private suspend fun doWorkDeferredAsync(
         params: Params? = null,
         block: suspend (Params?) -> T
     ): Deferred<T> = coroutineScope {
-        async(asyncJob + defaultDispatcher) {
+        async(asyncJob + Dispatchers.IO) {
             block(params)
         }.also { job = it }
     }

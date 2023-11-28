@@ -26,10 +26,10 @@ fun <T> Result<T>.successOrNull(): Result.Success<T>? {
     return if (isSuccess()) this else null
 }
 
-inline fun <T> Result<T>.isInitialized() = this !is Result.NotInitialized
+fun <T> Result<T>.isInitialized() = this !is Result.NotInitialized
 
 @OptIn(ExperimentalContracts::class)
-inline fun <T> Result<T>.isSuccess(): Boolean {
+fun <T> Result<T>.isSuccess(): Boolean {
     contract {
         returns(true) implies (this@isSuccess is Result.Success<T>)
     }
@@ -38,7 +38,7 @@ inline fun <T> Result<T>.isSuccess(): Boolean {
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun <T> Result<T>.isLoading(): Boolean {
+fun <T> Result<T>.isLoading(): Boolean {
     contract {
         returns(true) implies (this@isLoading is Result.Loading<T>)
     }
@@ -47,7 +47,7 @@ inline fun <T> Result<T>.isLoading(): Boolean {
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun <T> Result<T>.isError(): Boolean {
+fun <T> Result<T>.isError(): Boolean {
     contract {
         returns(true) implies (this@isError is Result.Error<T>)
     }

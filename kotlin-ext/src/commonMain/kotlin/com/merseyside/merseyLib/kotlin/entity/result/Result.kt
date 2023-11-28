@@ -12,7 +12,9 @@ sealed class Result<T> {
     class NotInitialized<T>(override val value: T? = null): Result<T>()
 
     @Serializable
-    class Success<T>(override val value: T) : Result<T>()
+    class Success<T>(override val value: T? = null) : Result<T>() {
+        fun requireValue() = requireNotNull(value)
+    }
 
     @Serializable
     class Loading<T>(override val value: T? = null) : Result<T>()

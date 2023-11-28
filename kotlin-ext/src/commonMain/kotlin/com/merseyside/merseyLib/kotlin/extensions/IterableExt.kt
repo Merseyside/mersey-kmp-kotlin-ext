@@ -34,10 +34,20 @@ fun <T1, T2> Iterable<T1>.subtractBy(
     }.toSet()
 }
 
-inline fun <reified R> Iterable<R>.findIsInstance(): R {
-    return filterIsInstance<R>().first()
+fun <T1, T2> Iterable<T1>.intersectBy(
+    other: Iterable<T2>,
+    predicate: (first: T1, second: T2) -> Boolean
+): Set<T1> {
+    if (count().isZero() || other.count().isZero()) return emptySet()
+    return filter { first ->
+        other.find { second -> predicate(first, second) } != null
+    }.toSet()
 }
 
-inline fun <reified R> Iterable<R>.findLastIsInstance(): R {
-    return filterIsInstance<R>().last()
+inline fun <reified R> Iterable<*>.findIsInstance(): R {
+    return first { item -> item is R } as R
+}
+
+inline fun <reified R> Iterable<*>.findLastIsInstance(): R {
+    return last { item -> item is R } as R
 }

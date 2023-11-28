@@ -3,6 +3,7 @@ package com.merseyside.merseyLib.kotlin.extensions
 import com.merseyside.merseyLib.kotlin.serialization.JsonConfigurator
 import com.merseyside.merseyLib.kotlin.serialization.deserialize
 import com.merseyside.merseyLib.kotlin.serialization.serialize
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.*
 import kotlin.jvm.JvmName
 
@@ -60,18 +61,20 @@ fun Collection<Double?>.toJsonArray(): JsonArray {
     }
 }
 
+@ExperimentalSerializationApi
 @JvmName("toAnyJsonArray")
 inline fun <reified T : Any> Collection<T?>.toJsonArray(json: Json = JsonConfigurator.json): JsonArray {
     return buildJsonArray {
         forEach { item ->
-            item?.toJsonObject(json)?.let {
-                add(it)
-            } ?: run {
-                val bool: Boolean? = null
-                add(bool)
-            }
+            if (item == null) add(null)
+            else add(item.toJsonElement(json))
         }
     }
+}
+
+inline fun <reified T : Any> T.toJsonElement(json: Json = JsonConfigurator.json): JsonElement {
+    val string = serialize(json)
+    return string.deserialize(json)
 }
 
 inline fun <reified T : Any> T.toJsonObject(json: Json = JsonConfigurator.json): JsonObject {

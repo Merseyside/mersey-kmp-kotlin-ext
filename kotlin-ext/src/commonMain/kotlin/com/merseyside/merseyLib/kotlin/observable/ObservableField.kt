@@ -5,19 +5,26 @@ import com.merseyside.merseyLib.kotlin.logger.ILogger
 expect abstract class ObservableField<T> constructor(initialValue: T?): ILogger {
     open var value: T?
 
-    protected val observerList: MutableList<(T) -> Unit>
+    protected val nullableObserverList: MutableSet<Observer<T?>>
+    protected val observerList: MutableSet<Observer<T>>
 
-    fun observe(ignoreCurrent: Boolean = false, observer: (T) -> Unit): Disposable<T>
+    fun observe(ignoreCurrent: Boolean = false, observer: Observer<T>): Disposable<T>
 
-    fun observe(observer: (T) -> Unit): Disposable<T>
+    fun observe(observer: Observer<T>): Disposable<T>
 
-    fun observeNullable(ignoreCurrent: Boolean = false, observer: (T?) -> Unit): Disposable<T>
+    open fun addObserver(observer: Observer<T>): Disposable<T>
 
-    fun removeObserver(block: (T) -> Unit): Boolean
+    fun observeNullable(ignoreCurrent: Boolean = false, observer: Observer<T?>): Disposable<T>
+
+    fun removeObserver(observer: Observer<*>): Boolean
 
     protected fun notifyObservers()
 
     fun removeAllObservers()
+
+    fun interface Observer<in T> {
+        operator fun invoke(value: T)
+    }
 }
 
 expect open class MutableObservableField<T>(initialValue: T? = null) : ObservableField<T>
@@ -27,16 +34,22 @@ expect open class SingleObservableField<T>(initialValue: T? = null) : MutableObs
     override var value: T?
 }
 
-expect class SingleObservableEvent(): SingleObservableField<Unit> {
+expect open class SingleObservableEvent(): SingleObservableField<Unit> {
     fun call()
 }
 
-class Disposable<T>(
+abstract class Disposable<T> {
+
+    abstract fun dispose(): Boolean
+}
+
+class SingleDisposable<T>(
     private val field: ObservableField<T>,
-    private val observer: (T) -> Unit
-) {
-    fun dispose() {
-        field.removeObserver(observer)
+    private val observer: ObservableField.Observer<*>
+): Disposable<T>() {
+
+    override fun dispose(): Boolean {
+        return field.removeObserver(observer)
     }
 }
 

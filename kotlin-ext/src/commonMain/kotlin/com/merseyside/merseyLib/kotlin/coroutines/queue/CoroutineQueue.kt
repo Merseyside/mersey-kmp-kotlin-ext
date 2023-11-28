@@ -1,18 +1,15 @@
 package com.merseyside.merseyLib.kotlin.coroutines.queue
 
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
-import com.merseyside.merseyLib.kotlin.coroutines.utils.defaultDispatcher
-import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
+import com.merseyside.merseyLib.kotlin.extensions.iteratePop
 import com.merseyside.merseyLib.kotlin.logger.ILogger
 import com.merseyside.merseyLib.kotlin.logger.Logger
 import com.merseyside.merseyLib.kotlin.utils.safeLet
 import kotlinx.coroutines.*
 
 class CoroutineQueue<Result, Args>(
-    var scope: CoroutineScope = CoroutineScope(defaultDispatcher)
+    var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : ILogger {
-
-    var fallOnException: Boolean = false
 
     val hasQueueWork: Boolean
         get() = workBuffer.isNotEmpty()
@@ -27,7 +24,7 @@ class CoroutineQueue<Result, Args>(
 
     var onPreExecute: () -> Unit = {}
     var onComplete: (Result, Args?) -> Unit = { _, _ -> }
-    var onError: (Throwable) -> Unit = {}
+    var onError: (Throwable) -> Unit = { throwable -> throw throwable }
     var onPostExecute: () -> Unit = {}
 
     fun add(resultProvider: suspend () -> Result) {
@@ -49,8 +46,7 @@ class CoroutineQueue<Result, Args>(
             throw exception
         } catch (throwable: Throwable) {
             Logger.logErr("CoroutineQueue", throwable)
-            if (fallOnException) throw throwable
-            else onError(throwable)
+            onError(throwable)
         }
 
         onPostExecute()
@@ -59,8 +55,8 @@ class CoroutineQueue<Result, Args>(
     }
 
     private suspend fun runSequentialWork() = coroutineScope {
-        while (isActive && hasQueueWork) {
-            val workPair = workBuffer.removeFirst()
+        workBuffer.iteratePop { workPair ->
+            ensureActive()
             val deferred = startNewJobAsync(workPair.first)
             completeJob(deferred.await(), workPair.second)
         }

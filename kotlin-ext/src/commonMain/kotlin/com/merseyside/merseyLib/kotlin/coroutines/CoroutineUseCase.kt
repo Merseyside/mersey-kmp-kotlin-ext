@@ -2,11 +2,10 @@ package com.merseyside.merseyLib.kotlin.coroutines
 
 import com.merseyside.merseyLib.kotlin.logger.Logger
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
-import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import kotlinx.coroutines.*
 
 abstract class CoroutineUseCase<T, Params>(
-    observingScope: CoroutineScope = CoroutineScope(uiDispatcher),
+    observingScope: CoroutineScope = CoroutineScope(Dispatchers.Main),
     executionStrategy: ExecutionStrategy = ExecutionStrategy.CANCEL_PREV_JOB
 ) : BaseCoroutineUseCase<T, Params>(observingScope, executionStrategy) {
 

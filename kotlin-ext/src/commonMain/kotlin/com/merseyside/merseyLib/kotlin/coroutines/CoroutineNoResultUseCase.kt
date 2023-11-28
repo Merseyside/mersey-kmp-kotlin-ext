@@ -2,13 +2,13 @@ package com.merseyside.merseyLib.kotlin.coroutines
 
 import com.merseyside.merseyLib.kotlin.logger.Logger
 import com.merseyside.merseyLib.kotlin.coroutines.exception.NoParamsException
-import com.merseyside.merseyLib.kotlin.coroutines.utils.uiDispatcher
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 abstract class CoroutineNoResultUseCase<Params>(
-    mainScope: CoroutineScope = CoroutineScope(uiDispatcher),
+    mainScope: CoroutineScope = CoroutineScope(Dispatchers.Main),
     executionStrategy: ExecutionStrategy = ExecutionStrategy.CANCEL_PREV_JOB
 ) : BaseCoroutineUseCase<Unit, Params>(mainScope, executionStrategy) {
 

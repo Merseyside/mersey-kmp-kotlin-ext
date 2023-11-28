@@ -6,11 +6,15 @@ dependencyResolutionManagement {
         google()
     }
 
-    val catalogVersions = "1.7.4"
+    val catalogVersions = "1.7.9"
     val group = "io.github.merseyside"
     versionCatalogs {
         val common by creating {
             from("$group:catalog-version-common:$catalogVersions")
+        }
+
+        val androidLibs by creating {
+            from("$group:catalog-version-android:$catalogVersions")
         }
 
         val multiplatformLibs by creating {
